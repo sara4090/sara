@@ -36,6 +36,7 @@ const { addCategory } = require('../controllers/addCategory');
 const { fetchCategories } = require('../controllers/fetchCategories');
 const { addFeedback } = require('../controllers/addFeedback');
 const { fetchFeedbacks } = require('../controllers/fetchFeedback');
+const { addToCart, removeFromCart, fetchCartStatus } = require('../controllers/addAndRemoveFromCart');
 
 //USER`S ROUTES
 router.post('/signup', signupValidation, signup);
@@ -70,6 +71,9 @@ router.delete('/deleteOrder/:id', fetchUser , deleteOrder)
 router.get('/fetchSingleOrder/:id', fetchUser , fetchSingleOrder)
 router.get('/fetchAllOrders', fetchUser , fetchAllOrders)
 router.patch('/orderStatus/:id', orderStatus)
+router.post('/addToCart', addToCart)
+router.delete('/removeFromCart/:id', removeFromCart)
+router.get('/fetchCartStatus', fetchCartStatus)
 
 //CATEGORY ROUTES
 router.post('/addCategory', categoryValidation ,  addCategory);
