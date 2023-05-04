@@ -64,7 +64,7 @@ const productSchema = new mongoose.Schema({
 productSchema.add({
   favorites: [{
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'Product'
+    ref: 'product'
   }]
 });
 
