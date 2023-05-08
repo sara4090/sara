@@ -1,17 +1,26 @@
 const Order = require("../models/Order");
 
 const addOrder = async (req, res) => {
+    let productId = req.params.id
+    console.log(productId)
     try {
 
 
         const order = new Order({
             user: req.user.id,
             product: {
-                id: req.params.productId,
+                productId: req.params.id,
+                
+                quantity: req.body.quantity,
                 price: req.body.price 
             },
             totalAmount: req.body.totalAmount,
-            quantity: req.body.quantity,
+            paymentMethod: {
+                paymentProvider:req.body.paymentProvider,
+                cardNumber: req.body.cardNumber,
+                expirationDate: req.body.expirationDate,
+                cvv: req.body.cvv
+            },
             userAddress: {
                 name: req.body.name,
                 phoneNumber: req.body.phoneNumber,
@@ -24,6 +33,7 @@ const addOrder = async (req, res) => {
                 country: req.body.country,
 
             },
+            
         });
         await order.save();
         res.status(201).json({ message: "Order created successfully", order });

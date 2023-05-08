@@ -67,7 +67,7 @@ router.get('/getRecomendedProducts', fetchUser , recomendedProducts)
 router.post('/productRecomendation', fetchUser , productRecomendations)
 
 //ORDERS ROUTES
-router.post('/addOrder', fetchUser , addOrder)
+router.post('/addOrder/:id', fetchUser , addOrder)
 router.delete('/deleteOrder/:id', fetchUser , deleteOrder)
 router.get('/fetchSingleOrder/:id', fetchUser , fetchSingleOrder)
 router.get('/fetchAllOrders', fetchUser , fetchAllOrders)

@@ -10,9 +10,9 @@ const port = process.env.PORT
 app.use(express.json())
 app.use(cors())
 
-
 const routes = require('./routes/userRoutes')
 const admin = require('./routes/adminRoutes')
+const data = require('./routes/dataRoutes')
 
 const sessionKey = process.env.SESSION_SECRET
 const fileUpload = require('express-fileupload')
@@ -30,6 +30,7 @@ app.use(
 
 app.use('/api/v1', routes)
 app.use('/admin', admin)
+app.use('/dataForDatabase', data)
 
 const databaseConnection = () => {
     try {

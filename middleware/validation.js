@@ -27,7 +27,7 @@ exports.signupValidation = [
 // FOR LOGIN
 exports.loginValidation = [
     check('email', 'Email is required').isEmail().normalizeEmail({ gmail_remove_dots: true }),
-    check('password', 'Password must be atleast 8 charcters long including lower case upper case, special characters  and numbers').isStrongPassword({
+    check('password', 'Password is required').isStrongPassword({
         min: 8,
         allow_numbers: true,
         allow_lowercase: true,
@@ -49,3 +49,20 @@ exports.categoryValidation = [
     check('name', 'Name already exists').exists(),
     
 ]
+exports.adminSignupValidation = [
+    check('name', 'Name is required').not().isEmpty(),
+    check('email', 'Email is required').isEmail().normalizeEmail({ gmail_remove_dots: true }),
+    check('password', 'Password must be atleast 8 charcters long including lower case upper case, special characters  and numbers').isStrongPassword({
+        min: 8,
+        allow_numbers: true,
+        allow_lowercase: true,
+        allow_uppercase: true,
+    }),
+    check('confirmPassword')
+        .custom((value, { req }) => {
+            if (value !== req.body.password) {
+                throw new Error('Passwords do not match');
+            }
+            return true;
+        })
+    ]

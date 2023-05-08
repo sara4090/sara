@@ -1,49 +1,77 @@
 const mongoose = require('mongoose');
 
-const product = new mongoose.Schema({
-    productId: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "product"
-    },
-    price: { type: String, required: true }
-});
-
 const orderSchema = new mongoose.Schema({
-    user: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'user',
-      },
-    
-     product: [product],
+  user: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+    required: true
+  },
+  product: [{
+    productId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Product',
+      required: true
+    },
     quantity: {
-        type: String,
-        required: true
+      type: Number,
+      required: true,
+      min: 1
     },
-    totalAmount: {
-        type: String,
-        required: true
-    },
-    status: {
-        type: String,
-        enum: ["Pending", "Confirmed", "Shipped", "Delivered", "Cancelled"],
-        default: "Pending",
-      },
-    date: {
-        type: Date,
-        default: Date.now
-    },
-
-    userAddress: {
-        name: { type: String, required: true },
-        phoneNumber: { type: String, required: true },
-        secondNumber: { type: String },
-        pincode: { type: String, required: true },
-        area: { type: String, required: true },
-        address: { type: String, required: true },
-        city: { type: String, required: true },
-        state: { type: String, required: true },
-        country: { type: String, required: true }
+    price: {
+      type: Number,
+      required: true,
     }
+  }],
+  date: {
+    type: Date,
+    default: Date.now,
+    required: true
+  },
+  totalAmount: {
+    type: Number,
+    required: true,
+    min: 0
+  },
+  paymentMethod: [
+    {
+      paymentProvider: {
+        type: String,
+        required: true
+      },
+      cardNumber: {
+        type: String,
+        required: true
+      },
+      expirationDate: {
+        type: String,
+        required: true
+      },
+      cvv: {
+        type: String,
+        required: true
+      }
+    }
+  ],
+
+  userAddress: [
+    {
+    name: { type: String, required: true },
+    phoneNumber: { type: String, required: true },
+    secondNumber: { type: String },
+    pincode: { type: String, required: true },
+    area: { type: String, required: true },
+    address: { type: String, required: true },
+    city: { type: String, required: true },
+    state: { type: String, required: true },
+    country: { type: String, required: true }
+  }
+],
+status: {
+  type: String,
+    required: true,
+    enum: ['pending', 'processing', 'completed', 'cancelled'],
+    default: 'pending'
+}
 
 });
 
