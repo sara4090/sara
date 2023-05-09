@@ -3,7 +3,7 @@ const Category = require('../models/Category')
 const fetchCategories = async (req, res) => {
     try {
         const category = await Category.find({}).limit(10);
-
+        console.log(category,"cat");
         if (!category) {
             return res.status(404).send({ message: "No categories found." });
         }
