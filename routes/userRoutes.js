@@ -38,6 +38,12 @@ const { fetchCategories } = require('../controllers/fetchCategories');
 const { addFeedback } = require('../controllers/addFeedback');
 const { fetchFeedbacks } = require('../controllers/fetchFeedback');
 const { addToCart, removeFromCart, fetchCartStatus } = require('../controllers/addAndRemoveFromCart');
+const { addPaymentMethod } = require('../controllers/addPaymentMethod');
+// const { validatePaymentMethod } = require('../controllers/validatePayment');
+const { addSubCategory } = require('../controllers/addSubCategory');
+const { fetchSubCategories } = require('../controllers/fetcSubCategories');
+const { deleteSubCategory } = require('../controllers/deleteSubCategory');
+const { deleteCategory } = require('../controllers/deleteCategory');
 
 //USER`S ROUTES
 router.post('/signup', signupValidation, signup);
@@ -74,8 +80,12 @@ router.get('/fetchAllOrders', fetchUser , fetchAllOrders)
 router.patch('/orderStatus/:id', orderStatus)
 
 //CATEGORY ROUTES
-router.post('/addCategory', categoryValidation ,  addCategory);
+router.post('/addCategory',fetchUser, categoryValidation ,  addCategory);
 router.get('/fetchCategories', fetchCategories)
+router.post('/addSubCategory/:id', fetchUser, categoryValidation , addSubCategory);
+router.get('/fetchSubCategories/:id', fetchSubCategories)
+router.delete('/deleteSubCategory/:id', deleteSubCategory)
+router.delete('/deleteCategory/:id', deleteCategory)
 
 //FEEDBACK
 router.post('/addFeedback', fetchUser,  addFeedback)
@@ -86,6 +96,8 @@ router.post('/addToCart', fetchUser , addToCart)
 router.delete('/removeFromCart/:id', fetchUser , removeFromCart)
 router.get('/fetchCartStatus', fetchUser , fetchCartStatus)
 
-
+//PAYMENT
+router.post('/addPaymentMethods', fetchUser,  addPaymentMethod)
+// router.post('/validatePayment/:id', validatePaymentMethod)
 
 module.exports = router;

@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 const paymentSchema = new mongoose.Schema({
     user: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'User',
+        ref: 'user',
         required: true
     },
     amount: {
@@ -13,31 +13,29 @@ const paymentSchema = new mongoose.Schema({
     status: {
         type: String,
         enum: ['success', 'pending', 'failed'],
-        required: true
+        required: true,
+        default: 'pending'
     },
-    payment_method: {
+    paymentMethod: {
         type: String,
         enum: ['credit_card', 'debit_card'],
-        credit_card: {
-            card_number: { type: String },
-            cvv: { type: String },
-            valid: { type: Date },
-        },
-        debit_card: {
-            card_number: { type: String },
-            cvv: { type: String },
-            valid: { type: Date },
-        },
-
-        required: true
     },
+    cardDetails: {
+        cardHolderName: { type: String },
+        cardNumber: { type: String },
+        cvv: { type: String },
+        valid: { type: String },
+
+    },
+
+
     date: {
         type: Date,
         default: Date.now
     },
     transaction_id: {
         type: String,
-        required: true
+        // required: true
     },
 });
 

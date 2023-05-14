@@ -14,6 +14,9 @@ const productSchema = new mongoose.Schema({
   category: {
     type: String,
   },
+  subCategory: {
+    type: String,
+  },
   images: [
     {
       public_id: {
@@ -35,6 +38,18 @@ const productSchema = new mongoose.Schema({
     type: String
   },
   brand: {
+    type: String
+  },
+  mfr:{
+    type: String
+  },
+  mfrNo:{
+    type: String
+  },
+  package: {
+    type: String
+  },
+  datasheet:{
     type: String
   },
   inventory: {

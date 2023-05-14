@@ -5,6 +5,8 @@ const categorySchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'user',
     },
+    subcategories: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Subcategory' }],
+
     name: {
         type: String,
         required: true,
@@ -16,7 +18,7 @@ const categorySchema = new mongoose.Schema({
     // date:{
     // type: Date,
     // default: Date.now
-    // },
+    // }
 });
 
 const Category = mongoose.model('categories', categorySchema);

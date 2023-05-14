@@ -39,7 +39,7 @@ exports.loginValidation = [
 exports.validationsForAddingProducts = [
     check('name', 'Name is required').not().isEmpty(),
     check('title', 'Title is required').not().isEmpty(),
-    check('description', 'Description must be 10 charcarters long').isLength({min: 10}),
+    check('description', 'Description must be 10 charcarters long').isLength({ min: 10 }),
     check('price', 'Price is required').not().isEmpty(),
     check('quantity', 'Quantity is required').not().isEmpty(),
     check('category', 'Category is required').not().isEmpty(),
@@ -47,7 +47,7 @@ exports.validationsForAddingProducts = [
 ]
 exports.categoryValidation = [
     check('name', 'Name already exists').exists(),
-    
+
 ]
 exports.adminSignupValidation = [
     check('name', 'Name is required').not().isEmpty(),
@@ -65,4 +65,21 @@ exports.adminSignupValidation = [
             }
             return true;
         })
-    ]
+]
+
+exports.fileValidation = [
+    check('file').custom((value, { req }) => {
+        if (!req.file) {
+            throw new Error('File is required');
+        } else if (
+            !['application/vnd.ms-excel', 'text/csv', 'application/pdf'].includes(
+                req.file.mimetype
+            )
+        ) {
+            throw new Error('File type not supported');
+        } else {
+            return true;
+        }
+    })
+    
+]

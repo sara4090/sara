@@ -1,10 +1,11 @@
-const multer = require('multer');
+const multer = require('multer')
 
+// Set up Multer middleware
+const storage = multer.memoryStorage();
+const upload = multer({
+  storage: storage,
+  limits: { fileSize: 10 * 1024 * 1024 } // 10MB file size limit
+});
 
-let storage = multer.diskStorage({
-   destination: (req, file, cb) => { cb(null, './public/upload') },
-   filename: (req, file, cb) => { cb(null, file.originalname) }
-})
-let upload = multer({ storage: storage })
 
 module.exports = upload;
