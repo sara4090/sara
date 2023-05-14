@@ -83,9 +83,9 @@ router.patch('/orderStatus/:id', orderStatus)
 router.post('/addCategory',fetchUser, categoryValidation ,  addCategory);
 router.get('/fetchCategories', fetchCategories)
 router.post('/addSubCategory/:id', fetchUser, categoryValidation , addSubCategory);
-router.get('/fetchSubCategories/:id', fetchSubCategories)
-router.delete('/deleteSubCategory/:id', deleteSubCategory)
-router.delete('/deleteCategory/:id', deleteCategory)
+router.get('/fetchSubCategories/:id', fetchUser,  fetchSubCategories)
+router.delete('/deleteSubCategory/:id', fetchUser,  deleteSubCategory)
+router.delete('/deleteCategory/:id', fetchUser, deleteCategory)
 
 //FEEDBACK
 router.post('/addFeedback', fetchUser,  addFeedback)
