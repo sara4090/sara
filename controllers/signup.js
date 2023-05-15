@@ -56,7 +56,7 @@ const signup = async (req, res) => {
             res.status(200).send({ success: true, message: "Successfully signed up, please verify your mail." })
         }
     } catch (error) {
-        //res.status(400).send({ error: error.message })
+        //res.status(500).send({ error: error.message })
     }
 }
 
