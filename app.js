@@ -8,7 +8,12 @@ require('dotenv').config()
 const uri = process.env.MONGO_URI
 const port = process.env.PORT
 app.use(express.json())
-app.use(cors())
+// app.use(cors())
+const corsConfig = {
+    credentials :true,
+    origin:true
+}
+app.use(cors(corsConfig))
 
 const routes = require('./routes/userRoutes')
 const admin = require('./routes/adminRoutes')
