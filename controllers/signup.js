@@ -38,7 +38,7 @@ const signup = async (req, res) => {
             country: req.body.country,
             address: req.body.address,
             is_admin: 0,
-        });
+        })
         const userdata = await User.findOne({ email: req.body.email });
         if (userdata) {
             res.status(200).send({ success: false, message: "Email already exists" })

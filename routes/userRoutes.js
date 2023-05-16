@@ -44,6 +44,7 @@ const { addSubCategory } = require('../controllers/addSubCategory');
 const { fetchSubCategories } = require('../controllers/fetcSubCategories');
 const { deleteSubCategory } = require('../controllers/deleteSubCategory');
 const { deleteCategory } = require('../controllers/deleteCategory');
+const { createCustomer, createIntent, attachPaymentMethod } = require('../controllers/addStripePayment');
 
 //USER`S ROUTES
 router.post('/signup', signupValidation, signup);
@@ -98,6 +99,9 @@ router.get('/fetchCartStatus', fetchUser , fetchCartStatus)
 
 //PAYMENT
 router.post('/addPaymentMethods', fetchUser,  addPaymentMethod)
+router.post('/createCustomer', createCustomer)
+router.post('/createPaymentIntent', createIntent)
+router.post('/attachPaymentMethod', attachPaymentMethod)
 // router.post('/validatePayment/:id', validatePaymentMethod)
 
 module.exports = router;

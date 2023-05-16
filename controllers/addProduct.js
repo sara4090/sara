@@ -33,6 +33,7 @@ const addProduct = async (req, res) => {
             description: req.body.description,
             price: req.body.price,
             category: req.body.category,
+            subCategory: req.body.subCategory,
             brand: req.body.brand,
             mfr: req.body.mfr,
             mfrNo: req.body.mfrNo,
