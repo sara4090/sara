@@ -6,16 +6,7 @@ const paymentSchema = new mongoose.Schema({
         ref: 'user',
         required: true
     },
-    amount: {
-        type: Number,
-        required: true
-    },
-    status: {
-        type: String,
-        enum: ['success', 'pending', 'failed'],
-        required: true,
-        default: 'pending'
-    },
+  
     paymentMethod: {
         type: String,
         enum: ['credit_card', 'debit_card'],

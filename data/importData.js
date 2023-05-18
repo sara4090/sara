@@ -1,46 +1,55 @@
-let xlsx = require('xlsx')
-const path = require('path')
-const { validationResult } = require('express-validator')
-const Product = require('../models/Product');
+let Product = require('../models/Product')
+let csv = require('csvtojson')
+let data = []
 const importData = async (req, res) => {
+    try {
+        csv()
+            .fromFile(req.file.path)
+            .then(async (response) => {
+                console.log(response)
+                for (let x = 0; x < response.length; x++) {
+                    data.push({
+                      productHrf: response[x].product_href,
+                      name: response[x].Name,
+                      mfrPart: response[x].Mfr_Part,
+                      title: response[x].Title,
+                      category: response[x].category,
+                        mfr: response[x].Mfr,
+                        datasheet: response[x].Datasheet,
+                        subCategory: response[x].Subategory,
+                        price: response[x].Price,
+                        public_id: response[x].public_id,
+                        url: response[x].img_url,
+                        description: response[x].Description,
+                        availability: response[x].Availability,
+                        mfrNo: response[x].mfrNo,
+                        brand: response[x].Brand,
+                        package: response[x].Package,
+                        inventory: response[x].Inventory,
+                        stock: response[x].Stock,
+                        material: response[x].Material,
+                        ram: response[x].Ram,
+                        mount: response[x].Mount,
+                        shape: response[x].Shape,
+                        series: response[x].Series,
+                        size: response[x].Size,
+                        productStatus: response[x].Product_Status,
+                        efficiency: response[x].Efficiency_Type,
+                        height: response[x].Height_Seated,
+                        svhc: response[x].REACH_SVHC,
+                        rohs: response[x].Rohs_Status,
+                        storage: response[x].Storage,
+                        color: response[x].Color,
 
-  const errors = validationResult(req)
-  if (!errors.isEmpty()) {
-    res.status(400).send({ error: errors.array() })
-  }
+                    })
+                }
+                await Product.insertMany(data)
+            })
 
-  if (!req.file) {
-    return res.status(400).json({ message: 'No file uploaded' });
-  }
+        res.status(400).send({ success: true, message: 'File imported successfully' })
 
-  const allowedExtensions = ['.xlsx', '.xls', '.csv', '.pdf'];
-  const fileExtension = path.extname(req.file.originalname);
-  if (!allowedExtensions.includes(fileExtension)) {
-    return res.status(400).json({ message: 'Invalid file type' });
-  }
-
-  const MAX_FILE_SIZE = 10 * 1024 * 1024; 
-  if (req.file.size > MAX_FILE_SIZE) {
-    return res.status(400).json({ message: 'File too large' });
-  }
-
-  const workbook = xlsx.read(req.file.buffer, { type: 'buffer' });
-
-  const expectedSheetName = 'Sheet1';
-  if (workbook.SheetNames.indexOf(expectedSheetName) === -1) {
-    return res.status(400).json({ message: 'Invalid Excel sheet' });
-  }
-
-  const sheet = workbook.Sheets[expectedSheetName];
-  const data = xlsx.utils.sheet_to_json(sheet);
-
-  try {
-    await Product(data);
-    return res.status(200).json({ message: 'Data imported successfully' });
-  } catch (error) {
-    console.error(error);
-    return res.status(500).json({ message: 'Error importing data' });
-  }
-};
-
+    } catch (error) {
+        res.status(400).send({ success: false, message: error.message })
+    }
+}
 module.exports = { importData }

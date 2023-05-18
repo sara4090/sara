@@ -81,5 +81,10 @@ exports.fileValidation = [
             return true;
         }
     })
-    
+
+]
+
+exports.blogValidation = [
+    check('title', 'Title must be atleast 10 characters long.').isLength({ min: 10 }),
+    check('description', 'Description must be atleast 50 characters long.').isLength({ min: 50 }),
 ]

@@ -72,13 +72,9 @@ const updateProduct = async (req, res) => {
         if (!updatedProduct) {
             return res.status(404).send("Product not found");
         }
-        return res
-            .status(200)
-            .json({ message: "Product updated successfully", updatedProduct });
+        return res.status(200).send({ message: "Product updated successfully", updatedProduct });
     } catch (error) {
-        return res
-            .status(500)
-            .send({ message: "Internal Server Error", error: error.message });
+        return res.status(500).send({error: error.message });
     }
 };
 
