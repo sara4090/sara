@@ -104,11 +104,11 @@ router.get('/fetchCartStatus', fetchUser, fetchCartStatus)
 
 //PAYMENT
 router.post('/addPaymentMethods', fetchUser, addPaymentMethod)
-router.post('/createCustomer', createCustomer)
-router.post('/createtIntent', createIntent)
-router.post('/attachPaymentMethod', attachPaymentMethod)
-router.post('/createPaymentIntent', createPaymentIntent)
-router.post('/webhook', express.raw({ type: 'application/json' }), handlePaymentStatus)
-router.post('/addStripePayment', addStripePaymentMethod)
-router.post('/confirmPayment', confirmPaymentMethod)
+router.post('/createCustomer', fetchUser, createCustomer)
+router.post('/createtIntent', fetchUser, createIntent)
+router.post('/attachPaymentMethod', fetchUser, attachPaymentMethod)
+router.post('/createPaymentIntent', fetchUser, createPaymentIntent)
+router.post('/webhook', fetchUser, express.raw({ type: 'application/json' }), handlePaymentStatus)
+router.post('/addStripePayment', fetchUser, addStripePaymentMethod)
+router.post('/confirmPayment', fetchUser, confirmPaymentMethod)
 module.exports = router;
