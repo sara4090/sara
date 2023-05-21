@@ -26,6 +26,13 @@ app.use(express.static(path.resolve(__dirname, 'public')))
 
 const sessionKey = process.env.SESSION_SECRET
 const fileUpload = require('express-fileupload')
+app.use(
+    session({
+        secret: sessionKey,
+        resave: false,
+        saveUninitialized: false,
+    })
+)
 app.use('/api/', dataRoute)
 app.use('/api/v1', routes)
 app.use('/admin', admin)
@@ -34,13 +41,7 @@ app.use(fileUpload({
     useTempFiles: true
 }));
 
-app.use(
-    session({
-        secret: sessionKey,
-        resave: false,
-        saveUninitialized: false,
-    })
-)
+
 
 const databaseConnection = () => {
     try {
