@@ -1,30 +1,83 @@
+
 require('dotenv').config();
 const stripe = require('stripe')(process.env.STRIPE_SECRET);
 
 const addStripePaymentMethod = async (req, res) => {
+  const line_items = req.body.cartItems.map((item) => {
+    return {
+      price_data: {
+        currency: "USD",
+        product_data: {
+          name: item.name,
+          images: [item.images],
+          description: item.desc,
+          metadata: {
+            id: item.id
+          },
+        },
+        unit_amount: item.price * 100
+      },
+      quantity: item.quantity
+    }
+  });
   try {
-    const customer = await stripe.customers.create({
-      name: req.body.name,
-      email: req.body.email,
-      phone: req.body.phone,
-      source: req.body.stripeToken,
-      address: {
-        line1: req.body.line1,
-        line2: req.body.line2,
-        postal_code: req.body.postal_code,
-        city: req.body.city,
-        state: req.body.state,
-        country: req.body.country
+    const session = await stripe.checkout.sessions.create({
+      shipping_address_collection: {
+        allowed_countries: ['IN', 'PK', 'AE'],
+      },
+      shipping_options: [
+        {
+          shipping_rate_data: {
+            type: 'fixed_amount',
+            fixed_amount: {
+              amount: 0,
+              currency: 'usd',
+            },
+            display_name: 'Free shipping',
+            delivery_estimate: {
+              minimum: {
+                unit: 'business_day',
+                value: 5,
+              },
+              maximum: {
+                unit: 'business_day',
+                value: 7,
+              },
+            },
+          },
+        },
+        {
+          shipping_rate_data: {
+            type: 'fixed_amount',
+            fixed_amount: {
+              amount: 1500,
+              currency: 'usd',
+            },
+            display_name: 'Next day air',
+            delivery_estimate: {
+              minimum: {
+                unit: 'business_day',
+                value: 1,
+              },
+              maximum: {
+                unit: 'business_day',
+                value: 1,
+              },
+            },
+          },
+        },
+      ],
+      phone_number_collection: {
+        enabled: true,
+      },
+      line_items,
+      mode: 'payment',
+      success_url: 'http://localhost:3000/success',
+      cancel_url: 'http://localhost:3000/cancel'
 
-      }
     });
-    const charge = await stripe.charges.create({
-      amount: req.body.amount * 100,
-      description: req.body.productName,
-      currency: 'USD',
-      customer: customer.id,
-    });
-    res.status(200).send({ customer, charge });
+    res.send({ url: session.url })
+
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
