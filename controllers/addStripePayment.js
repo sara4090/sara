@@ -72,8 +72,8 @@ const addStripePaymentMethod = async (req, res) => {
       },
       line_items,
       mode: 'payment',
-      success_url: `http://localhost:3000/success`,
-      cancel_url: `http://localhost:3000/cancel`
+      success_url: `http://localhost:3000`,
+      cancel_url: `http://localhost:3000/cart`
 
     });
     res.send({ url: session.url })
