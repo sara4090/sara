@@ -9,23 +9,23 @@ const importData = async (req, res) => {
                 console.log(response)
                 for (let x = 0; x < response.length; x++) {
                     userData.push({
-                      name: response[x].name,
-                      title: response[x].title,
-                      category: response[x].category,
-                      images:{
-                        public_id: response[x].public_id,
-                        url: response[x].url
-                      },
-                      description: response[x].description,
-                      price: response[x].price,
-                      brand: response[x].brand,
-                      inventory: response[x].inventory,
-                      stock: response[x].stock,
-                      material: response[x].material,
-                      ram: response[x].ram,
-                      storage: response[x].storage,
-                      color: response[x].color
-                        
+                        name: response[x].name,
+                        title: response[x].title,
+                        category: response[x].category,
+                        images: [{
+                            public_id: response[x].public_id,
+                            url: response[x].url
+                        }],
+                        description: response[x].description,
+                        price: response[x].price,
+                        brand: response[x].brand,
+                        inventory: response[x].inventory,
+                        stock: response[x].stock,
+                        material: response[x].material,
+                        ram: response[x].ram,
+                        storage: response[x].storage,
+                        color: response[x].color
+
                     })
                 }
                 await Product.insertMany(userData)

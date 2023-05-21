@@ -23,7 +23,7 @@ const addStripePaymentMethod = async (req, res) => {
   try {
     const session = await stripe.checkout.sessions.create({
       shipping_address_collection: {
-        allowed_countries: ['IN', 'PK', 'AE'],
+        allowed_countries: ['IN', 'PK', 'NP'],
       },
       shipping_options: [
         {
@@ -72,8 +72,8 @@ const addStripePaymentMethod = async (req, res) => {
       },
       line_items,
       mode: 'payment',
-      success_url: 'http://localhost:3000/success',
-      cancel_url: 'http://localhost:3000/cancel'
+      success_url: `http://localhost:3000/success`,
+      cancel_url: `http://localhost:3000/cancel`
 
     });
     res.send({ url: session.url })
