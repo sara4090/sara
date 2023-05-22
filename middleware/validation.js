@@ -88,3 +88,12 @@ exports.blogValidation = [
     check('title', 'Title must be atleast 10 characters long.').isLength({ min: 10 }),
     check('description', 'Description must be atleast 50 characters long.').isLength({ min: 50 }),
 ]
+
+exports.passwordValidation = [
+    check('password', 'Password must be atleast 8 charcters long including lower case upper case, special characters  and numbers').isStrongPassword({
+        min: 8,
+        allow_numbers: true,
+        allow_lowercase: true,
+        allow_uppercase: true,
+    })
+]

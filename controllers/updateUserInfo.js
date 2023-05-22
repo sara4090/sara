@@ -2,7 +2,7 @@ const User = require('../models/User');
 
 const updateUserInfo = async (req, res) => {
     try {
-        const {email, name, phoneNumber, telePhone, jobTitle, companyName, country, address } = req.body;
+        const {email, name, phoneNumber, jobTitle, companyName, country, address } = req.body;
         const update = {};
         if (name) {
             update.name = name;
@@ -13,9 +13,7 @@ const updateUserInfo = async (req, res) => {
         if (phoneNumber) {
             update.phoneNumber = phoneNumber;
         }
-        if (telePhone) {
-            update.telePhone = telePhone;
-        }
+       
         if (jobTitle) {
             update.jobTitle = jobTitle;
         }

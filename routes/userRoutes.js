@@ -3,7 +3,7 @@ const router = express.Router()
 const fetchUser = require('../middleware/fetchUser')
 const uploadImages = require('../middleware/uploadFile')
 
-const { signupValidation, loginValidation, validationsForAddingProducts, categoryValidation } = require('../middleware/validation')
+const { signupValidation, loginValidation, validationsForAddingProducts, categoryValidation, passwordValidation } = require('../middleware/validation')
 
 
 const { signup } = require('../controllers/signup');
@@ -44,9 +44,9 @@ const { addSubCategory } = require('../controllers/addSubCategory');
 const { fetchSubCategories } = require('../controllers/fetcSubCategories');
 const { deleteSubCategory } = require('../controllers/deleteSubCategory');
 const { deleteCategory } = require('../controllers/deleteCategory');
-const { createCustomer, createIntent, attachPaymentMethod } = require('../controllers/addCustomrForPAyment');
-const { createPaymentIntent, handlePaymentStatus } = require('../controllers/addStripePay');
-const { importData } = require('../data/importData');
+//const { createCustomer, createIntent, attachPaymentMethod } = require('../controllers/addCustomrForPAyment');
+//const { createPaymentIntent, handlePaymentStatus } = require('../controllers/addStripePay');
+// const { importData } = require('../data/importData');
 const { addStripePaymentMethod } = require('../controllers/addStripePayment');
 const { confirmPaymentMethod } = require('../controllers/confirmPaymentMethod')
 
@@ -56,7 +56,7 @@ router.post('/login', loginValidation, login);
 router.get('/getUserDetails', fetchUser, getUserDetails)
 router.get('/verify', verifyMail);
 router.post('/forgetPassword', forgetPassword)
-router.get('/resetPassword', resetPassword)
+router.post('/resetPassword', passwordValidation,  resetPassword)
 router.post('/updatePassword', fetchUser, updatePassword)
 router.patch('/updateUserInfo/:_id', fetchUser, updateUserInfo)
 router.get('/getUserData/:id', fetchUser, getUserData)

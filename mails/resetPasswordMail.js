@@ -17,7 +17,7 @@ const resetPasswordMail = (name, email, token) => {
             from: process.env.EMAIL,
             to: email,
             subject: 'Reset Password',
-            html: `<p>Hi ${name}, I guess you have forgotten your password. Please follow this link to <a href = "http://15.206.128.120:8000/api/v1/resetPassword?token=${token}"> <b> reset your password</b></a></p>`
+            html: `<p>Hi <b>${name}</b>, I guess you have forgotten your password. Please follow this link to <a href = "http://localhost:8000/api/v1/resetPassword?token=${token}"> <b> reset your password</b></a></p>`
         }
         transpoter.sendMail(mailOtions, (err, info) => {
             if (err) {
@@ -29,9 +29,9 @@ const resetPasswordMail = (name, email, token) => {
         })
 
     } catch (error) {
-        res.status(400).send({ success: false, msg: error.message });
+        //res.status(400).send({ success: false, msg: error.message });
 
     }
-}
+};
 
 module.exports = resetPasswordMail;
