@@ -2,7 +2,7 @@ const User = require('../models/User');
 
 const updateUserInfo = async (req, res) => {
     try {
-        const {email, name, phoneNumber, jobTitle, companyName, country, address } = req.body;
+        const { email, name, phoneNumber, jobTitle, companyName, country, address } = req.body;
         const update = {};
         if (name) {
             update.name = name;
@@ -13,7 +13,7 @@ const updateUserInfo = async (req, res) => {
         if (phoneNumber) {
             update.phoneNumber = phoneNumber;
         }
-       
+
         if (jobTitle) {
             update.jobTitle = jobTitle;
         }
@@ -27,17 +27,17 @@ const updateUserInfo = async (req, res) => {
             update.address = address;
         }
 
-        const userData = User.findById(req.params._id);
+        const userData = User.findById(req.params._id).select("-password").select("-confirmPassword");
         console.log(req.params._id)
         if (!userData) {
             res.status(404).send('Data not found...')
         }
 
         const dataUpdate = await User.findByIdAndUpdate(req.params._id, { $set: update }, { new: true });
-        res.status(200).send({ dataUpdate })
+        res.status(200).send({ message: "Updated Successfully", name: dataUpdate.name, email: dataUpdate.email, phoneNumber: dataUpdate.phoneNumber, jobTitle: dataUpdate.jobTitle, companyName: dataUpdate.companyName, country: dataUpdate.country, address: dataUpdate.address })
 
     } catch (error) {
-        res.send({ error: error.message })
+        //res.send({ error: error.message })
     }
 }
 

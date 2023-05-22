@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router()
 const fetchUser = require('../middleware/fetchUser')
 const uploadImages = require('../middleware/uploadFile')
+const upload = require('../middleware/uploadAttachment')
 
 const { signupValidation, loginValidation, validationsForAddingProducts, categoryValidation, passwordValidation } = require('../middleware/validation')
 
@@ -48,7 +49,8 @@ const { deleteCategory } = require('../controllers/deleteCategory');
 //const { createPaymentIntent, handlePaymentStatus } = require('../controllers/addStripePay');
 // const { importData } = require('../data/importData');
 const { addStripePaymentMethod } = require('../controllers/addStripePayment');
-const { confirmPaymentMethod } = require('../controllers/confirmPaymentMethod')
+const { confirmPaymentMethod } = require('../controllers/confirmPaymentMethod');
+const { submitRfq } = require('../controllers/RQFformSubmission');
 
 //USER`S ROUTES
 router.post('/signup', signupValidation, signup);
@@ -103,13 +105,10 @@ router.get('/fetchCartStatus', fetchUser, fetchCartStatus)
 
 
 //PAYMENT
-// router.post('/addPaymentMethods', fetchUser, addPaymentMethod)
-// router.post('/createCustomer', fetchUser, createCustomer)
-// router.post('/createtIntent', fetchUser, createIntent)
-// router.post('/attachPaymentMethod', fetchUser, attachPaymentMethod)
-// router.post('/createPaymentIntent', fetchUser, createPaymentIntent)
-// router.post('/webhook', fetchUser, express.raw({ type: 'application/json' }), handlePaymentStatus)
+
 router.post('/addStripePayment', fetchUser, addStripePaymentMethod)
 router.post('/confirmPayment', fetchUser, confirmPaymentMethod)
 
+//Submit form
+router.post('/submitForm', submitRfq)
 module.exports = router;
