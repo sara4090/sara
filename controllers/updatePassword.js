@@ -9,7 +9,7 @@ const hashedPassword = async (password) => {
 
 const updatePassword = async (req, res) => {
     try {
-        const userId = req.body.userId;
+        const userId = req.user.id;
         const password = req.body.password;
 
         if (userId === '') {
@@ -27,7 +27,7 @@ const updatePassword = async (req, res) => {
                         password: newPassword
                     }
                 });
-                res.status(200).send({ success: true, message: "Your password is updated successfully.." })
+                res.status(200).send({ success: true, message: "Your password is updated successfully.." , newPassword: updated.password})
 
             }
             else {
