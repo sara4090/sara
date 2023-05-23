@@ -25,8 +25,10 @@ const { fetchBlogs } = require('../controllers/fetchBloges');
 const { fetchSingleBlog } = require('../controllers/fetchSingleBlog');
 const { updateBlog } = require('../controllers/updateBlog');
 const { deleteBlog } = require('../controllers/deleteBlog');
+const { adminVerifyerifyMail } = require('../mails/adminVerifyMail');
 
 router.post('/signup', adminSignupValidation, adminSignup)
+router.get('/verify', adminVerifyerifyMail)
 router.post('/login', loginValidation, adminLogin)
 router.get('/fetchData', fetchUser, adminDetails)
 router.get('/getCustomers', fetchUser, fetchCustomers)

@@ -4,7 +4,7 @@ const { validationResult } = require('express-validator')
 const bcrypt = require('bcryptjs')
 const JWT = require('jsonwebtoken')
 const secKey = process.env.JWT_KEY
-const sendVerificationEmail = require('../mails/verificationEmail')
+const adminMailVerification = require('../mails/adminMailVerification')
 
 //Hashing Password
 const hashedPassword = async (password) => {
@@ -43,7 +43,7 @@ const adminSignup = async (req, res) => {
                 }
             }
             const authToken = JWT.sign(data, secKey);
-            sendVerificationEmail(req.body.name, req.body.email, user_data.id);
+            adminMailVerification(req.body.name, req.body.email, user_data.id);
             res.status(200).send({ success: true, message: "Successfully signed up, please verify your mail." })
         }
 

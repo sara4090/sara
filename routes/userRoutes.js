@@ -51,6 +51,7 @@ const { deleteCategory } = require('../controllers/deleteCategory');
 const { addStripePaymentMethod } = require('../controllers/addStripePayment');
 const { confirmPaymentMethod } = require('../controllers/confirmPaymentMethod');
 const { submitRfq } = require('../controllers/RQFformSubmission');
+const { sendAttachMent } = require('../controllers/RFQAttachmentSubmission');
 
 //USER`S ROUTES
 router.post('/signup', signupValidation, signup);
@@ -111,4 +112,5 @@ router.post('/confirmPayment', fetchUser, confirmPaymentMethod)
 
 //Submit form
 router.post('/submitForm', submitRfq)
+router.post('/sendAttachment', upload.single('attachment'), sendAttachMent)
 module.exports = router;

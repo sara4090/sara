@@ -34,10 +34,19 @@ const updateUserInfo = async (req, res) => {
         }
 
         const dataUpdate = await User.findByIdAndUpdate(req.params._id, { $set: update }, { new: true });
-        res.status(200).send({ message: "Updated Successfully", name: dataUpdate.name, email: dataUpdate.email, phoneNumber: dataUpdate.phoneNumber, jobTitle: dataUpdate.jobTitle, companyName: dataUpdate.companyName, country: dataUpdate.country, address: dataUpdate.address })
+        res.status(200).send({
+            message: "Updated Successfully",
+            name: dataUpdate.name,
+            email: dataUpdate.email,
+            phoneNumber: dataUpdate.phoneNumber,
+            jobTitle: dataUpdate.jobTitle,
+            companyName: dataUpdate.companyName,
+            country: dataUpdate.country,
+            address: dataUpdate.address
+        })
 
     } catch (error) {
-        //res.send({ error: error.message })
+        res.send({ error: error.message })
     }
 }
 

@@ -2,7 +2,7 @@ const nodeMailer = require('nodemailer')
 require('dotenv').config()
 
 
-const sendVerificationEmail = async (name, email, userId) => {
+const adminMailVerification = async (name, email, userId) => {
     try {
         const transporter = nodeMailer.createTransport({
             host: 'smtp.gmail.com',
@@ -19,7 +19,7 @@ const sendVerificationEmail = async (name, email, userId) => {
             from: process.env.EMAIL,
             to: email,
             subject: 'Verify your Email',
-            html: `<p>Hi ${name}, Hope you are doing well. Please follow this link to <a href = "http://localhost:8000/api/v1/verify?id=${userId}"> verify your email </a></p>`
+            html: `<p>Hi ${name}, Hope you are doing well. Please follow this link to <a href = "http://localhost:8000/admin/verify?id=${userId}"> verify your email </a></p>`
         }
 
         transporter.sendMail(mailOtions, (err, info) => {
@@ -34,4 +34,4 @@ const sendVerificationEmail = async (name, email, userId) => {
         console.error(error.message)
     }
 }
-module.exports = sendVerificationEmail;
+module.exports = adminMailVerification;
