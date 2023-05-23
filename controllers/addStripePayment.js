@@ -6,7 +6,7 @@ const addStripePaymentMethod = async (req, res) => {
 
   const customer = await stripe.customers.create({
     metadata:{
-      id: req.user._id,
+      userId: req.user.userId,
       cart: JSON.stringify(req.body.cartItems)
     }
   })
@@ -84,7 +84,8 @@ const addStripePaymentMethod = async (req, res) => {
       cancel_url: `http://localhost:3000/cart`
 
     });
-    res.send({ url: session.url })
+    res.send({ data: session })
+    console.log(session)
 
   } catch (error) {
     res.status(500).json({ error: error.message });
