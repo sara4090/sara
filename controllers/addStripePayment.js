@@ -3,6 +3,13 @@ require('dotenv').config();
 const stripe = require('stripe')(process.env.STRIPE_SECRET);
 
 const addStripePaymentMethod = async (req, res) => {
+
+  const customer = await stripe.customers.create({
+    metadata:{
+      id: req.user._id,
+      cart: JSON.stringify(req.body.cartItems)
+    }
+  })
   const line_items = req.body.cartItems.map((item) => {
     return {
       price_data: {
@@ -70,6 +77,7 @@ const addStripePaymentMethod = async (req, res) => {
       phone_number_collection: {
         enabled: true,
       },
+      customer: customer.id,
       line_items,
       mode: 'payment',
       success_url: `http://localhost:3000`,

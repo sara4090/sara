@@ -51,7 +51,8 @@ const { deleteCategory } = require('../controllers/deleteCategory');
 const { addStripePaymentMethod } = require('../controllers/addStripePayment');
 const { confirmPaymentMethod } = require('../controllers/confirmPaymentMethod');
 const { submitRfq } = require('../controllers/RQFformSubmission');
-const { sendAttachMent } = require('../controllers/RFQAttachmentSubmission');
+// const { sendAttachMent } = require('../controllers/RFQAttachmentSubmission');
+const { stripeWebhook } = require('../controllers/stripeWebHook');
 
 //USER`S ROUTES
 router.post('/signup', signupValidation, signup);
@@ -109,8 +110,9 @@ router.get('/fetchCartStatus', fetchUser, fetchCartStatus)
 
 router.post('/addStripePayment', fetchUser, addStripePaymentMethod)
 router.post('/confirmPayment', fetchUser, confirmPaymentMethod)
+router.post('/webhook', express.raw({type: 'application/json'}), stripeWebhook)
 
 //Submit form
 router.post('/submitForm', submitRfq)
-router.post('/sendAttachment', upload.single('attachment'), sendAttachMent)
+// router.post('/sendAttachment', upload.single('attachment'), sendAttachMent)
 module.exports = router;
