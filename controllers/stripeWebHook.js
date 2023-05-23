@@ -32,7 +32,7 @@ const stripe = require('stripe')(process.env.STRIPE_SECRET);
 let endpointSecret;
 endpointSecret = "whsec_d35bf67d2b8c9ef7bee87fe0c353e76e045d58abc930079985445ae4bcfb2c35";
 
-const stripeWebhook = (req, res) => {
+const stripeWebhook =async (req, res) => {
     const sig = req.headers['stripe-signature'];
 
     let data;
@@ -61,12 +61,17 @@ const stripeWebhook = (req, res) => {
 
     // Handle the event
     if (eventType === "checkout.session.completed") {
-        stripe.customers.retrieve(data.customer).then((customer) => {
-            console.log(customer)
-            console.log("data:", data)
-            createOrder(customer, data);
-        }).catch(err => console.error(err.message))
-    }
+        try {
+            const customer = await stripe.customers.retrieve(data.customer);
+            console.log(customer);
+            console.log('Data:', data);
+            const savedOrder = await createOrder(customer, data);
+            res.json(savedOrder);
+          } catch (error) {
+            console.error(error.message);
+            res.status(500).send('Internal Server Error');
+          }
+        }
 
 
     // Return a 200 res to acknowledge receipt of the event
