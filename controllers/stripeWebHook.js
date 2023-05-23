@@ -1,3 +1,6 @@
+const Order = require('../models/Order')
+require('dotenv').config()
+
 const createOrder = async (customer, data) => {
     const items = JSON.parse(customer.metadata.cart);
 
@@ -12,7 +15,7 @@ const createOrder = async (customer, data) => {
         payment_status: data.payment_status
     });
     try {
-        const savedOrder = await newOrder.save(order);
+        const savedOrder = await newOrder.save();
         res.json(savedOrder);
         console.log(savedOrder);
         
@@ -24,7 +27,7 @@ const createOrder = async (customer, data) => {
 
 
 
-const stripe = require('stripe')('sk_test_...');
+const stripe = require('stripe')(process.env.STRIPE_SECRET);
 
 // This is your Stripe CLI webhook secret for testing your endpoint locally.
 //let endpointSecret;
