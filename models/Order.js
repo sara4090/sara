@@ -4,7 +4,7 @@ const orderSchema = new mongoose.Schema({
   userId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
-    required: true
+    // required: true
   },
   customerId: { type: String },
   paymentIntentId: { type: String },
@@ -18,7 +18,7 @@ const orderSchema = new mongoose.Schema({
     price: { type: Number, required: true, }
   }],
   date: { type: Date, default: Date.now, required: true },
-  totalAmount: { type: Number, required: true, min: 0 },
+  totalAmount: { type: Number,  min: 0 },
   paymentMethod: [{
     paymentProvider: { type: String, required: true },
     cardNumber: { type: String, required: true },

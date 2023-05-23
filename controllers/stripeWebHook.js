@@ -5,18 +5,18 @@ const createOrder = async (customer, data) => {
     const items = JSON.parse(customer.metadata.cart);
 
     const newOrder = new Order({
-        userId: customer.metadata.userId,
+         userId: customer.metadata.userId,
         customerId: data.customer,
         paymentIntentId: data.payment_intent,
         products: items,
-        totalAmount: data.amount_subtotal,
+         totalAmount: data.amount_subtotal,
         price: data.amount_total,
         shipping: data.customer_details,
         payment_status: data.payment_status
     });
     try {
         const savedOrder = await newOrder.save();
-        res.json(savedOrder);
+        //res.json(savedOrder);
         console.log(savedOrder);
 
     } catch (error) {
