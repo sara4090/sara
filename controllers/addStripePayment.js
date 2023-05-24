@@ -12,13 +12,12 @@ const addStripePaymentMethod = async (req, res) => {
   })
   const line_items = req.body.cartItems.map((item) => {
     const images = Array.isArray(item.images) ? item.images : [item.images];
-    console.log(req.body.cartItems)
+   // console.log(req.body.cartItems)
     const customFields = {
       mfr: item.mfr,
       mfrNo: item.mfrNo
-      
-   
     };
+
     return {
       price_data: {
         currency: "USD",
@@ -98,12 +97,13 @@ const addStripePaymentMethod = async (req, res) => {
       cancel_url: `http://localhost:3000/cart`
 
     });
-    res.send({ data: session })
+    res.send({ url: session.url })
     console.log(session)
 
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
+
 };
 
 module.exports = { addStripePaymentMethod }

@@ -1,41 +1,52 @@
-let csv = require('csvtojson')
-const Product = require('../')
-let userData = []
-const importData = async (req, res) => {
-    try {
-        csv()
-            .fromFile(req.file.path)
-            .then(async (response) => {
-                console.log(response)
-                for (let x = 0; x < response.length; x++) {
-                    userData.push({
-                        name: response[x].name,
-                        title: response[x].title,
-                        category: response[x].category,
-                        images: [{
-                            public_id: response[x].public_id,
-                            url: response[x].url
-                        }],
-                        description: response[x].description,
-                        price: response[x].price,
-                        brand: response[x].brand,
-                        inventory: response[x].inventory,
-                        stock: response[x].stock,
-                        material: response[x].material,
-                        ram: response[x].ram,
-                        storage: response[x].storage,
-                        color: response[x].color
+const express = require('express');
+require('dotenv').config()
+const xlsx = require('xlsx');
+const nodemailer = require('nodemailer');
 
-                    })
-                }
-                await Product.insertMany(userData)
-            })
+const multer = require('multer');
+const upload = multer({ dest: 'uploads/' });
 
-        res.status(400).send({ success: true, message: 'File imported successfully' })
+const app = express();
 
-    } catch (error) {
-        res.status(400).send({ success: false, message: error.message })
+// Configure nodemailer with your email service provider's credentials
+const transporter = nodemailer.createTransport({
+  host: process.env.HOST,
+  auth: {
+    user: process.env.EMAIL,
+    pass: process.env.PASSWORD,
+  },
+});
+
+// Define a route for uploading the Excel file
+app.post('/upload', upload.single('file'), (req, res) => {
+  // Read the uploaded Excel file
+  const workbook = xlsx.readFile(req.file.path);
+
+  // Perform any necessary processing on the workbook
+
+  // Send the workbook as an attachment in an email
+  transporter.sendMail({
+    from: req.body.email,
+    to: process.env.EMAIL,
+    subject: 'Excel Sheet',
+    text: 'Please find the attached Excel sheet.',
+    attachments: [{
+      filename: 'excel_sheet.xlsx',
+      content: xlsx.write(workbook, { type: 'buffer', bookType: 'xlsx' }),
+    }],
+  }, (error, info) => {
+    if (error) {
+      console.log('Error occurred while sending email:', error);
+      res.status(500).send('Error occurred while sending email.');
+    } else {
+      console.log('Email sent:', info.response);
+      res.send('Email sent successfully.');
     }
-}
+  });
+});
 
-module.exports = { importData }
+// Start the server
+const port = 3000;
+app.listen(port, () => {
+  console.log(`Server is listening on port ${port}.`);
+});

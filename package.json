@@ -31,7 +31,8 @@
     "nodemailer": "^6.9.1",
     "randomstring": "^1.2.3",
     "stripe": "^12.5.0",
-    "xlsx": "^0.18.5"
+    "xlsx": "^0.18.5",
+    "xlsx-populate": "^1.21.0"
   },
   "devDependencies": {
     "nodemon": "^2.0.22"

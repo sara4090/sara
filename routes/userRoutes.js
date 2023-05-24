@@ -2,7 +2,9 @@ const express = require('express');
 const router = express.Router()
 const fetchUser = require('../middleware/fetchUser')
 const uploadImages = require('../middleware/uploadFile')
-const upload = require('../middleware/uploadAttachment')
+
+const multer = require('multer');
+const upload = multer({ dest: 'uploads/' });
 
 const { signupValidation, loginValidation, validationsForAddingProducts, categoryValidation, passwordValidation } = require('../middleware/validation')
 
@@ -52,6 +54,7 @@ const { confirmPaymentMethod } = require('../controllers/confirmPaymentMethod');
 const { submitRfq } = require('../controllers/RQFformSubmission');
 // const { sendAttachMent } = require('../controllers/RFQAttachmentSubmission');
 const { stripeWebhook } = require('../controllers/stripeWebHook');
+const { sendAttachment } = require('../controllers/RFQexcelMail');
 
 //USER`S ROUTES
 router.post('/signup', signupValidation, signup);
@@ -112,5 +115,5 @@ router.post('/webhook', express.raw({type: 'application/json'}), stripeWebhook)
 
 //Submit form
 router.post('/submitForm', submitRfq)
-// router.post('/sendAttachment', upload.single('attachment'), sendAttachMent)
+router.post('/sendAttachment', upload.single('file'), sendAttachment)
 module.exports = router;
