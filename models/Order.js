@@ -8,35 +8,35 @@ const orderSchema = new mongoose.Schema({
   },
   customerId: { type: String },
   paymentIntentId: { type: String },
-  product: [{
+  products: [{
     productId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'Product',
-      required: true
+      // required: true
     },
     quantity: { type: Number, required: true, min: 1 },
     price: { type: Number, required: true, }
   }],
   date: { type: Date, default: Date.now, required: true },
   totalAmount: { type: Number,  min: 0 },
-  paymentMethod: [{
-    paymentProvider: { type: String, required: true },
-    cardNumber: { type: String, required: true },
-    expirationDate: { type: String, required: true },
-    cvv: { type: String, required: true }
-  }],
+  // paymentMethod: [{
+  //   paymentProvider: { type: String,  },
+  //   cardNumber: { type: String,  },
+  //   expirationDate: { type: String,  },
+  //   cvv: { type: String,  }
+  // }],
 
-  userAddress: [
+  customer_details: [
     {
-      name: { type: String, required: true },
-      phoneNumber: { type: String, required: true },
+      name: { type: String, },
+      phoneNumber: { type: String,  },
       secondNumber: { type: String },
-      pincode: { type: String, required: true },
-      area: { type: String, required: true },
-      address: { type: String, required: true },
-      city: { type: String, required: true },
-      state: { type: String, required: true },
-      country: { type: String, required: true }
+      pincode: { type: String,  },
+      area: { type: String, },
+      address: { type: String,  },
+      city: { type: String, },
+      state: { type: String,  },
+      country: { type: String, }
     }
   ],
   status: {

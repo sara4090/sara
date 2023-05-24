@@ -7,17 +7,17 @@ const paymentSchema = new mongoose.Schema({
         required: true
     },
   
-    paymentMethod: {
-        type: String,
-        enum: ['credit_card', 'debit_card'],
-    },
-    cardDetails: {
-        cardHolderName: { type: String },
-        cardNumber: { type: String },
-        cvv: { type: String },
-        valid: { type: String },
+    // paymentMethod: {
+    //     type: String,
+    //     enum: ['credit_card', 'debit_card'],
+    // },
+    // cardDetails: {
+    //     cardHolderName: { type: String },
+    //     cardNumber: { type: String },
+    //     cvv: { type: String },
+    //     valid: { type: String },
 
-    },
+    // },
 
 
     date: {

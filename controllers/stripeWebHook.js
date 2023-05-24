@@ -1,5 +1,5 @@
 const Order = require('../models/Order')
-require('dotenv').config()
+require('dotenv').config();
 
 const createOrder = async (customer, data) => {
     const items = JSON.parse(customer.metadata.cart);
@@ -13,11 +13,15 @@ const createOrder = async (customer, data) => {
         price: data.amount_total,
         shipping: data.customer_details,
         payment_status: data.payment_status
+
+        
     });
     try {
         const savedOrder = await newOrder.save();
         //res.json(savedOrder);
         console.log(savedOrder);
+        console.log(data.customer_details);
+        console.log(items);
 
     } catch (error) {
         console.log(error)
