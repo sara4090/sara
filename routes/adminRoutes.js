@@ -12,6 +12,7 @@ const { fetchCustomers } = require('../controllers/getCustomersLists');
 const { adminAddProduct } = require('../controllers/adminAddProduct');
 const { adminDeleteProduct } = require('../controllers/adminDeleteProduct');
 const { adminFetchProducts } = require('../controllers/adminFetchProducts');
+const { fetchAllOrders } = require('../controllers/fetchAllOrders');
 const { deleteCustomer } = require('../controllers/deleteCustomer');
 const { getRecentOrders } = require('../controllers/adminRecentOrders');
 const { completedRecentOrders } = require('../controllers/completedRecentOrder');
@@ -35,6 +36,7 @@ router.get('/getCustomers', fetchUser, fetchCustomers)
 router.post('/adminAddProduct', validationsForAddingProducts, uploadImages, fetchUser, adminAddProduct)
 router.delete('/adminDeleteProduct/:id', fetchUser, adminDeleteProduct)
 router.get('/getAllProducts', adminFetchProducts)
+router.get('/fetchAllOrders', fetchUser, fetchAllOrders)
 router.delete('/deleteCustomer/:id', fetchUser, deleteCustomer)
 router.get('/getRecentOrders', fetchUser, getRecentOrders)
 router.get('/completedRecentOrder', fetchUser, completedRecentOrders)

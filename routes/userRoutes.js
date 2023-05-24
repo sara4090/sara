@@ -32,7 +32,6 @@ const { updateProduct } = require('../controllers/updateProduct');
 const { addOrder } = require('../controllers/addOrder');
 const { deleteOrder } = require('../controllers/deleteOrder');
 const { fetchSingleOrder } = require('../controllers/fetchSingleOrder');
-const { fetchAllOrders } = require('../controllers/fetchAllOrders');
 const { orderStatus } = require('../controllers/orderStatus');
 const { addCategory } = require('../controllers/addCategory');
 const { fetchCategories } = require('../controllers/fetchCategories');
@@ -85,7 +84,6 @@ router.post('/productRecomendation', fetchUser, productRecomendations)
 router.post('/addOrder/:id', fetchUser, addOrder)
 router.delete('/deleteOrder/:id', fetchUser, deleteOrder)
 router.get('/fetchSingleOrder/:id', fetchUser, fetchSingleOrder)
-router.get('/fetchAllOrders', fetchUser, fetchAllOrders)
 router.patch('/orderStatus/:id', orderStatus)
 
 //CATEGORY ROUTES
