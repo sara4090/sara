@@ -5,22 +5,32 @@ const stripe = require('stripe')(process.env.STRIPE_SECRET);
 const addStripePaymentMethod = async (req, res) => {
 
   const customer = await stripe.customers.create({
-    metadata:{
+    metadata: {
       userId: req.user.userId,
       cart: JSON.stringify(req.body.cartItems)
     }
   })
   const line_items = req.body.cartItems.map((item) => {
+    const images = Array.isArray(item.images) ? item.images : [item.images];
+    console.log(req.body.cartItems)
+    const customFields = {
+      mfr: item.mfr,
+      mfrNo: item.mfrNo
+      
+   
+    };
     return {
       price_data: {
         currency: "USD",
         product_data: {
           name: item.name,
-          images: [item.images],
+          images: images,
           description: item.desc,
           metadata: {
-            id: item.id
+            id: item.id,
+           ...customFields
           },
+
         },
         unit_amount: item.price * 100
       },
@@ -29,9 +39,11 @@ const addStripePaymentMethod = async (req, res) => {
   });
   try {
     const session = await stripe.checkout.sessions.create({
+      payment_method_types: ['card'],
       shipping_address_collection: {
         allowed_countries: ['IN', 'PK', 'NP'],
       },
+
       shipping_options: [
         {
           shipping_rate_data: {
@@ -77,6 +89,8 @@ const addStripePaymentMethod = async (req, res) => {
       phone_number_collection: {
         enabled: true,
       },
+      billing_address_collection: 'required',
+
       customer: customer.id,
       line_items,
       mode: 'payment',
@@ -84,7 +98,7 @@ const addStripePaymentMethod = async (req, res) => {
       cancel_url: `http://localhost:3000/cart`
 
     });
-    res.send({ url: session.url })
+    res.send({ data: session })
     console.log(session)
 
   } catch (error) {

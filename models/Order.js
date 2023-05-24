@@ -15,7 +15,9 @@ const orderSchema = new mongoose.Schema({
       // required: true
     },
     quantity: { type: Number, required: true, min: 1 },
-    price: { type: Number, required: true, }
+    price: { type: Number, required: true, },
+    mfr: { type: Object, },
+    mfrNo: { type: Number,}
   }],
   date: { type: Date, default: Date.now, required: true },
   totalAmount: { type: Number,  min: 0 },
@@ -26,7 +28,7 @@ const orderSchema = new mongoose.Schema({
   //   cvv: { type: String,  }
   // }],
 
-  customer_details: [
+  address: [
     {
       name: { type: String, },
       phoneNumber: { type: String,  },
@@ -37,8 +39,8 @@ const orderSchema = new mongoose.Schema({
       city: { type: String, },
       state: { type: String,  },
       country: { type: String, }
-    }
-  ],
+    }]
+  ,
   status: {
     type: String,
     required: true,

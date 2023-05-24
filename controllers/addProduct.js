@@ -10,10 +10,10 @@ const addProduct = async (req, res) => {
   try {
 
   
-      const errors = validationResult(req)
-      if (!errors.isEmpty()) {
-          res.status(400).send({ error: errors.array() })
-      }
+      // const errors = validationResult(req)
+      // if (!errors.isEmpty()) {
+      //     res.status(400).send({ error: errors.array() })
+      // }
 
     cloudinary.config({
       cloud_name: process.env.CLOUD_NAME,

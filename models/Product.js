@@ -8,6 +8,7 @@ const offersSchema = new Schema({
 
 const productSchema = new Schema({
   name: { type: String },
+  title: { type: String },
   category: { type: String },
   images: [
     {
@@ -23,6 +24,9 @@ const productSchema = new Schema({
   description: { type: String },
   basicInfo: { type: String },
   price: { type: String },
+  mfr: { type: String },
+  mfrNo: { type: String },
+  partNumber: { type: String },
   inventory: { type: String },
   brand: { type: String },
   ram: { type: String },

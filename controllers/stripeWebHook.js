@@ -5,29 +5,30 @@ const createOrder = async (customer, data) => {
     const items = JSON.parse(customer.metadata.cart);
 
     const newOrder = new Order({
-         userId: customer.metadata.userId,
+        userId: customer.metadata.userId,
         customerId: data.customer,
         paymentIntentId: data.payment_intent,
         products: items,
-         totalAmount: data.amount_subtotal,
+        totalAmount: data.amount_subtotal,
         price: data.amount_total,
-        shipping: data.customer_details,
+        mfr: data.mfr,
+        mfrNo: data.mfrNo,
         payment_status: data.payment_status
 
-        
+
     });
     try {
         const savedOrder = await newOrder.save();
         //res.json(savedOrder);
-        console.log(savedOrder);
-        console.log(data.customer_details);
+        //console.log(savedOrder);
+        console.log(data.mfrNo);
         console.log(items);
 
     } catch (error) {
         console.log(error)
     }
 
-}
+};
 
 
 const stripe = require('stripe')(process.env.STRIPE_SECRET);
@@ -36,8 +37,9 @@ const stripe = require('stripe')(process.env.STRIPE_SECRET);
 let endpointSecret;
 //endpointSecret = "whsec_d35bf67d2b8c9ef7bee87fe0c353e76e045d58abc930079985445ae4bcfb2c35";
 
-const stripeWebhook =async (req, res) => {
+const stripeWebhook = async (req, res) => {
     const sig = req.headers['stripe-signature'];
+
 
     let data;
     let eventType;
@@ -71,11 +73,12 @@ const stripeWebhook =async (req, res) => {
             console.log('Data:', data);
             const savedOrder = await createOrder(customer, data);
             res.json(savedOrder);
-          } catch (error) {
+
+        } catch (error) {
             console.error(error.message);
-            res.status(500).send('Internal Server Error');
-          }
+            // res.status(500).send('Internal Server Error');
         }
+    }
 
 
     // Return a 200 res to acknowledge receipt of the event
