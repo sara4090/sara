@@ -47,7 +47,7 @@ router.get('/getSalesPerMonth', fetchUser, getSalesPerMonth)
 router.get('/checkPaymentHistory', fetchUser, checkPaymentHistory)
 
 //BLOGS ROUTES
-router.post('/addBlog', blogValidation, fetchUser, addBlog);
+router.post('/addBlog', uploadImages, blogValidation , fetchUser, addBlog);
 router.get('/fetchBlogs', fetchUser, fetchBlogs)
 router.get('/fetchSingleBlog/:id', fetchUser, fetchSingleBlog)
 router.patch('/updateBlog/:id', fetchUser, updateBlog)

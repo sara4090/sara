@@ -5,15 +5,19 @@ const blogSchema =  Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'admin',
     },
-    title: { type: String, required: true },
-    images: [{
-        public_id: { type: String },
-        url: { type: String },
-        created_at: {
-            type: Date, default: Date.now
-        }
-    }],
-    description: { type: String, required: true },
+    title: { type: String,  },
+    images: [
+        {
+          public_id: {
+            type: String,
+          },
+          url: {
+            type: String,
+          },
+        },
+      ],
+    description: { type: String,  },
+
     author: { type: String, default: "Anonymous", required: true },
     date: { type: Date, default: Date.now, required: true },
 
