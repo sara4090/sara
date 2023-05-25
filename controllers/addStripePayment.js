@@ -7,7 +7,8 @@ const addStripePaymentMethod = async (req, res) => {
   const customer = await stripe.customers.create({
     metadata: {
       userId: req.user.userId,
-      cart: JSON.stringify(req.body.cartItems)
+      cart: JSON.stringify(req.body.cartItems),
+      date: new Date().toISOString()
     }
   })
   const line_items = req.body.cartItems.map((item) => {

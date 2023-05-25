@@ -10,11 +10,11 @@ require('dotenv').config()
 const addBlog = async (req, res) => {
   try {
 
-  
-      const errors = validationResult(req)
-      if (!errors.isEmpty()) {
-          res.status(400).send({ error: errors.array() })
-      }
+
+    const errors = validationResult(req)
+    if (!errors.isEmpty()) {
+      res.status(400).send({ error: errors.array() })
+    }
 
     cloudinary.config({
       cloud_name: process.env.CLOUD_NAME,
@@ -23,7 +23,7 @@ const addBlog = async (req, res) => {
       secure: true
     });
 
- 
+
 
     const { images } = req.files;
     let imagesArray;
@@ -48,9 +48,9 @@ const addBlog = async (req, res) => {
 
 
     const blog = new Blog({
-        user: req.user.id,
-    title: req.body.title,
-    description: req.body.description,
+      user: req.user.id,
+      title: req.body.title,
+      description: req.body.description,
       images: imagesArray,
       author: req.body.author
     });
