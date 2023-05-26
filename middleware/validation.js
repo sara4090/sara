@@ -98,3 +98,13 @@ exports.passwordValidation = [
     })
 ]
 
+exports.rfqValidations = [
+    check('partNumberList', 'Part Number is required' ).not().isEmpty(),
+    check('mfrList', 'Menufecturer is required').not().isEmpty(),
+    check('qtyList', 'Quantity is required').not().isEmpty(),
+    check('name', 'Name is required').not().isEmpty(),
+    check('email', 'Email is required').not().isEmpty(),
+    check('phone', 'Phone is required').not().isEmpty(),
+    check('country', 'Country name is required').not().isEmpty(),
+
+]

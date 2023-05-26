@@ -1,6 +1,6 @@
 const nodemailer = require('nodemailer');
 require('dotenv').config()
-
+const { validationResult } = require('express-validator')
 
 // Configure email service (e.g., Gmail)
 const transporter = nodemailer.createTransport({
@@ -14,8 +14,13 @@ const transporter = nodemailer.createTransport({
 
 // Define API endpoint
 const submitRfq = (req, res) => {
+
+    const errors = validationResult(req)
+    if (!errors.isEmpty()) {
+      res.status(400).send({ error: errors.array() })
+    }
     const
-        { partNumber, mfr, qty, name, companyName, email, telephone, country, comment } = req.body;
+        { partNumber, mfr, qty, name, companyName, email, phone, country, comment } = req.body;
 
         const partNumberList = Array.isArray(partNumber) ? partNumber.join(', ') : [partNumber].join(', ');    
         
@@ -35,7 +40,7 @@ const submitRfq = (req, res) => {
         <b>Name:<b/> ${name},\n
         <b>Company Name:<b/> ${companyName},\n
         <b>Email:<b/> ${email},\n
-        <b>Telephone:<b/> ${telephone},\n
+        <b>Telephone:<b/> ${phone},\n
         <b>Country:<b/> ${country},\n
         <b>Comment:<b/> ${comment}`,
 

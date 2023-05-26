@@ -6,7 +6,7 @@ const uploadImages = require('../middleware/uploadFile')
 const multer = require('multer');
 const upload = multer({ dest: 'uploads/' });
 
-const { signupValidation, loginValidation, validationsForAddingProducts, categoryValidation, passwordValidation } = require('../middleware/validation')
+const { signupValidation, loginValidation, validationsForAddingProducts, categoryValidation, passwordValidation, rfqValidations } = require('../middleware/validation')
 
 
 const { signup } = require('../controllers/signup');
@@ -114,6 +114,6 @@ router.post('/confirmPayment', fetchUser, confirmPaymentMethod)
 router.post('/webhook', express.raw({type: 'application/json'}), stripeWebhook)
 
 //Submit form
-router.post('/submitForm', submitRfq)
+router.post('/submitForm',rfqValidations, submitRfq)
 router.post('/sendAttachment', upload.single('file'), sendAttachment)
 module.exports = router;
