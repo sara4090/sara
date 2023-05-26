@@ -1,55 +1,145 @@
 let Product = require('../models/Product')
-let csv = require('csvtojson')
-let data = []
+const xlsx = require('xlsx');
+
+
+// app.use(express.json());
+// app.use(express.urlencoded({ extended: true }));
+// app.use('/uploads', express.static('uploads'));
+
 const importData = async (req, res) => {
+
+    if (
+        req.file.mimetype !== 'application/vnd.ms-excel' &&
+        req.file.mimetype !==
+        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+    ) return res
+        .status(400)
+        .json({ error: 'Invalid file format. Only Excel files are supported' });
+
+    // Read the Excel file using xlsx library
+    const workbook = xlsx.readFile(req.file.path);
+
+    // Extract data from the Excel file
+    const worksheet = workbook.Sheets[workbook.SheetNames[0]];
+    const data = xlsx.utils.sheet_to_json(worksheet);
+    // Import data into MongoDB
     try {
-        csv()
-            .fromFile(req.file.path)
-            .then(async (response) => {
-                console.log(response)
-                for (let x = 0; x < response.length; x++) {
-                    data.push({
-                      productHrf: response[x].product_href,
-                      name: response[x].Name,
-                      mfrPart: response[x].Mfr_Part,
-                      title: response[x].Title,
-                      category: response[x].category,
-                        mfr: response[x].Mfr,
-                        datasheet: response[x].Datasheet,
-                        subCategory: response[x].Subategory,
-                        price: response[x].Price,
-                        public_id: response[x].public_id,
-                        url: response[x].img_url,
-                        description: response[x].Description,
-                        availability: response[x].Availability,
-                        mfrNo: response[x].mfrNo,
-                        brand: response[x].Brand,
-                        package: response[x].Package,
-                        inventory: response[x].Inventory,
-                        stock: response[x].Stock,
-                        material: response[x].Material,
-                        ram: response[x].Ram,
-                        mount: response[x].Mount,
-                        shape: response[x].Shape,
-                        series: response[x].Series,
-                        size: response[x].Size,
-                        productStatus: response[x].Product_Status,
-                        efficiency: response[x].Efficiency_Type,
-                        height: response[x].Height_Seated,
-                        svhc: response[x].REACH_SVHC,
-                        rohs: response[x].Rohs_Status,
-                        storage: response[x].Storage,
-                        color: response[x].Color,
+        for (const item of data) {
+            // Create a new document based on your schema
+            const newData = new Product({
+                name: item.name,
+                title: item.title,
+                images: [{
+                    public_id: item.public_id,
+                    url: item.url
+                }],
+                offers:[{
+                    label: item.label,
+                    value: item.value
+                }],
+                category: item.category,
+                description: item.description,
+                price: item.price,
+                mfr: item.mfr,
+                size: item.size,
+                color: item.color,
+                quantity: item.quantity,
+                mfrNo: item.mfrNo,
+                partNumber: item.partNumber,
+                inventory: item.inventory,
+                brand: item.brand,
+                ram: item.ram,
+                storage: item.storage,
+                compatible: item.compatible,
+                weight: item.weight,
+                material: item.material,
+                type: item.type,
+                factoryLead: item.factoryLead,
+                lifeCycle: item.lifeCycle,
+                contactPlating: item.contactPlating,
+                housingMaterial: item.housingMaterial,
+                processor: item.processor,
+                capacity: item.capacity,
+                pinsNo: item.pinsNo,
+                ramProcessor: item.ramProcessor,
+                operatingSystem: item.operatingSystem,
+                memory: item.memory,
+                memoryTechnology: item.memoryTechnology,
+                size: item.size,
+                antenna: item.antenna,
+                frequencyBand: item.frequencyBand,
+                cells: item.cells,
+                cores: item.cores,
+                designedFor: item.designedFor,
+                wiredWireless: item.wiredWireless,
+                CPC: item.CPC,
+                connectivity: item.connectivity,
+                refillingType: item.refillingType,
+                panelType: item.panelType,
+                screenForm_factor: item.screenForm_factor,
+                chipSet: item.chipSet,
+                displayTechnology: item.displayTechnology,
+                colorType: item.colorType,
+                color: item.color,
+                hsnCode: item.hsnCode,
+                sku: item.sku,
+                stock: item.stock,
+                priceBefore: item.priceBefore,
+                maxOrderQty: item.maxOrderQty,
+                minOrderQty: item.minOrderQty,
+                primaryProducts: item.primaryProducts,
+                primePartner: item.primePartner,
+                length: item.length,
+                breadth: item.breadth,
+                imageTitle: item.imageTitle,
+                height: item.height,
+                RadiationHardening: item.RadiationHardening,
+                PbfreeCode: item.PbfreeCode,
+                IECConformance: item.IECConformance,
+                FilterFeature: item.FilterFeature,
+                MixedContacts: item.MixedContacts,
+                Option: item.Option,
+                TotalNumberOfContacts: item.TotalNumberOfContacts,
+                Orientation: item.Orientation,
+                Depth: item.Depth,
+                ReachComplianceCode: item.ReachComplianceCode,
+                CurrentRating: item.CurrentRating,
+                Frequency: item.Frequency,
+                ApprovalAgency: item.ApprovalAgency,
+                LeadPitch: item.LeadPitch,
+                NumberOfContacts: item.NumberOfContacts,
+                MatingInformation: item.MatingInformation,
+                ContactGender: item.ContactGender,
+                EmptyShell: item.EmptyShell,
+                OperatingSupplyVoltage: item.OperatingSupplyVoltage,
+                BackshellType: item.BackshellType,
+                BodyOrShellStyle: item.BodyOrShellStyle,
+                Interface: item.Interface,
+                ELV: item.ELV,
+                MaxSupplyVoltage: item.MaxSupplyVoltage,
+                MinSupplyVoltage: item.MinSupplyVoltage,
+                CouplingType: item.CouplingType,
+                NumberOfPorts: item.NumberOfPorts,
+                AccessoryType: item.AccessoryType,
+                NumberOfPoles: item.NumberOfPoles,
+                Sealable: item.Sealable,
+                Density: item.Density,
+                NumberOfDrivers: item.NumberOfDrivers,
+                OutsideDiameter: item.OutsideDiameter,
+                NumberOfReceivers: item.NumberOfReceivers,
+                HeadDiameter: item.HeadDiameter,
+            });
 
-                    })
-                }
-                await Product.insertMany(data)
-            })
+            // Save the document to MongoDB
+            await newData.save();
+        }
 
-        res.status(400).send({ success: true, message: 'File imported successfully' })
+        res.json({ message: 'Data imported successfully' });
 
     } catch (error) {
-        res.status(400).send({ success: false, message: error.message })
+        console.log(error)
     }
 }
+
+
 module.exports = { importData }

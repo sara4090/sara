@@ -3,7 +3,7 @@ const { Schema } = mongoose;
 
 const offersSchema = new Schema({
   label: { type: String },
-  values: [{ type: String }],
+  values: { type: String },
 });
 
 const productSchema = new Schema({
@@ -20,6 +20,7 @@ const productSchema = new Schema({
       },
     },
   ],
+
 
   description: { type: String },
   basicInfo: { type: String },

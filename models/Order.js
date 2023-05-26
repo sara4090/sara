@@ -17,27 +17,26 @@ const orderSchema = new mongoose.Schema({
     quantity: { type: Number, required: true, min: 1 },
     price: { type: Number, required: true, },
     mfr: { type: Object, },
-    mfrNo: { type: Number,}
+    mfrNo: { type: Number, }
   }],
   date: { type: Date, default: Date.now, required: true },
-  totalAmount: { type: Number,  min: 0 },
-  // paymentMethod: [{
-  //   paymentProvider: { type: String,  },
-  //   cardNumber: { type: String,  },
-  //   expirationDate: { type: String,  },
-  //   cvv: { type: String,  }
-  // }],
+  totalAmount: { type: Number, min: 0 },
+  paymentMethod: [{
+    paymentProvider: { type: String, },
+    cardNumber: { type: String, },
+    expirationDate: { type: String, },
+    cvv: { type: String, }
+  }],
 
   address: [
     {
       name: { type: String, },
-      phoneNumber: { type: String,  },
+      phoneNumber: { type: String, },
       secondNumber: { type: String },
-      pincode: { type: String,  },
+      pincode: { type: String, },
       area: { type: String, },
-      address: { type: String,  },
       city: { type: String, },
-      state: { type: String,  },
+      state: { type: String, },
       country: { type: String, }
     }]
   ,
