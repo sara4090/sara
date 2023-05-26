@@ -17,15 +17,19 @@ const submitRfq = (req, res) => {
     const
         { partNumber, mfr, qty, name, companyName, email, telephone, country, comment } = req.body;
 
+        const partNumberList = partNumber.join(', ');
+        const mfrList = mfr.join(', ');
+        const qtyList = qty.join(', ');
+
 
     const mailOptions = {
         from: email,
         to: process.env.EMAIL,
         subject: 'New Form Submission',
         html: `<h3>Product's information<h3/>
-        <b> Part Number:<b/> ${partNumber},\n 
-        <b>Manufecturer:<b/> ${mfr},\n 
-        <b>Quantity:<b/> ${qty}\n
+        <b> Part Number:<b/> ${partNumberList},\n 
+        <b>Manufecturer:<b/> ${mfrList},\n 
+        <b>Quantity:<b/> ${qtyList}\n
         <h3>User's Information<h3/>
         <b>Name:<b/> ${name},\n
         <b>Company Name:<b/> ${companyName},\n

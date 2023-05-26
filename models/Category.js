@@ -5,7 +5,7 @@ const categorySchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'user',
     },
-    subcategories: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Subcategory' }],
+    subcategories: { type: mongoose.Schema.Types.ObjectId, ref: 'Subcategory' },
 
     name: {
         type: String,

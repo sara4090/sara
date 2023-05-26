@@ -12,8 +12,13 @@ const fetchSubCategories = async (req, res) => {
 
         }
         else {
-            const subcategories = await Subcategory.find({})
+            const subcategories = await Subcategory.find({ catId })
             res.status(200).send({ subcategories })
+            if (subcategories.catId) {
+
+            }
+           
+
 
         }
 

@@ -24,6 +24,7 @@ const addSubCategory = async (req, res) => {
             if (checkSubCat) {
                 res.status(201).send({ message: 'Sub category already exists..' })
             }
+           
             else {
                 await subCat.save();
                 res.status(200).send({ message: `Sub category ${subCat.name} is added to Category ${checkCat.name}`, checkCat, subCat })

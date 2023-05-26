@@ -33,11 +33,12 @@ const importData = async (req, res) => {
                     public_id: item.public_id,
                     url: item.url
                 }],
-                offers:[{
+                offers: [{
                     label: item.label,
-                    value: item.value
+                    values: item.values
                 }],
                 category: item.category,
+                subCategory: item.subCategory,
                 description: item.description,
                 price: item.price,
                 mfr: item.mfr,
@@ -137,7 +138,8 @@ const importData = async (req, res) => {
         res.json({ message: 'Data imported successfully' });
 
     } catch (error) {
-        console.log(error)
+        // console.log(error)
+        res.status(500).send({message: 'Error saving data, Some required fields are missing', error: error.message});
     }
 }
 
