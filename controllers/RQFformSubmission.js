@@ -1,4 +1,5 @@
 const nodemailer = require('nodemailer');
+const Email = require('../models/Email')
 require('dotenv').config()
 const { validationResult } = require('express-validator')
 
@@ -13,20 +14,20 @@ const transporter = nodemailer.createTransport({
 });
 
 // Define API endpoint
-const submitRfq = (req, res) => {
+const submitRfq = async (req, res) => {
 
-    const errors = validationResult(req)
-    if (!errors.isEmpty()) {
-      res.status(400).send({ error: errors.array() })
-    }
+    //const errors = validationResult(req)
+    // if (!errors.isEmpty()) {
+    //     res.status(400).send({ error: errors.array() })
+    // }
     const
         { partNumber, mfr, qty, name, companyName, email, phone, country, comment } = req.body;
 
-        const partNumberList = Array.isArray(partNumber) ? partNumber.join(', ') : [partNumber].join(', ');    
-        
-        const mfrList = Array.isArray(mfr) ? mfr.join(', ') : [mfr].join(', ');
-        
-        const qtyList = Array.isArray(qty) ? qty.join(', ') : [qty].join(', ');
+    const partNumberList = Array.isArray(partNumber) ? partNumber.join(', ') : [partNumber].join(', ');
+
+    const mfrList = Array.isArray(mfr) ? mfr.join(', ') : [mfr].join(', ');
+
+    const qtyList = Array.isArray(qty) ? qty.join(', ') : [qty].join(', ');
 
     const mailOptions = {
         from: email,
@@ -57,6 +58,26 @@ const submitRfq = (req, res) => {
             res.send({ success: true, message: 'Form submitted successfully' });
         }
     });
+    // Save email history
+    const emailData = new Email({
+        products: [
+            {
+                partNumber,
+                mfr,
+                qty
+
+            }
+        ],
+        name,
+        companyName,
+        email,
+        phone,
+        country,
+        comment
+    });
+    await emailData.save();
+    res.send('data saved')
 };
+
 
 module.exports = { submitRfq }

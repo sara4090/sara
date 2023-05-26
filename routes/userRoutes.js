@@ -55,6 +55,7 @@ const { submitRfq } = require('../controllers/RQFformSubmission');
 // const { sendAttachMent } = require('../controllers/RFQAttachmentSubmission');
 const { stripeWebhook } = require('../controllers/stripeWebHook');
 const { sendAttachment } = require('../controllers/RFQexcelMail');
+const { RFQhistory } = require('../controllers/RFQhistory');
 
 //USER`S ROUTES
 router.post('/signup', signupValidation, signup);
@@ -116,4 +117,5 @@ router.post('/webhook', express.raw({type: 'application/json'}), stripeWebhook)
 //Submit form
 router.post('/submitForm',rfqValidations, submitRfq)
 router.post('/sendAttachment', upload.single('file'), sendAttachment)
+router.get('/rqfHistory', RFQhistory)
 module.exports = router;
