@@ -17,10 +17,11 @@ const submitRfq = (req, res) => {
     const
         { partNumber, mfr, qty, name, companyName, email, telephone, country, comment } = req.body;
 
-        const partNumberList = partNumber.join(', ');
-        const mfrList = mfr.join(', ');
-        const qtyList = qty.join(', ');
-
+        const partNumberList = Array.isArray(partNumber) ? partNumber.join(', ') : [partNumber].join(', ');    
+        
+        const mfrList = Array.isArray(mfr) ? mfr.join(', ') : [mfr].join(', ');
+        
+        const qtyList = Array.isArray(qty) ? qty.join(', ') : [qty].join(', ');
 
     const mailOptions = {
         from: email,
