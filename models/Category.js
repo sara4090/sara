@@ -10,15 +10,11 @@ const categorySchema = new mongoose.Schema({
     name: {
         type: String,
         required: true,
-        unique: true
     },
     description: {
         type: String,
     },
-    // date:{
-    // type: Date,
-    // default: Date.now
-    // }
+  
 });
 
 const Category = mongoose.model('categories', categorySchema);

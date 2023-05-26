@@ -1,10 +1,11 @@
 let Product = require('../models/Product')
+const Category = require('../models/Category')
+const Subcategory = require('../models/Subcategory')
 const xlsx = require('xlsx');
+const { ObjectId } = require('mongoose').Types;
 
 
-// app.use(express.json());
-// app.use(express.urlencoded({ extended: true }));
-// app.use('/uploads', express.static('uploads'));
+
 
 const importData = async (req, res) => {
 
@@ -24,7 +25,38 @@ const importData = async (req, res) => {
     const data = xlsx.utils.sheet_to_json(worksheet);
     // Import data into MongoDB
     try {
+        const categoryMap = new Map(); // Map to store categories and their associated products
+
         for (const item of data) {
+            const categoryName = item.category;
+            const subCategoryName = item.subCategory;
+
+            let category = categoryMap.get(categoryName); // Check if category already exists in the map
+
+             category = await Category.findOne({ name: categoryName }); 
+
+            if (!category) {
+                // If category doesn't exist, create a new category and add it to the map
+                const newCategory = new Category({
+                    name: categoryName,
+                });
+
+                category = await newCategory.save();
+                categoryMap.set(categoryName, category);
+            }
+
+            let subCategory = await Subcategory.findOne({ name: subCategoryName }); // Check if subcategory already exists in the database
+
+            if (!subCategory) {
+                // If subcategory doesn't exist, create a new subcategory and save it
+                subCategory = new Subcategory({
+                    name: subCategoryName,
+                });
+
+                subCategory = await subCategory.save();
+            }
+
+
             // Create a new document based on your schema
             const newData = new Product({
                 name: item.name,
@@ -37,8 +69,14 @@ const importData = async (req, res) => {
                     label: item.label,
                     values: item.values
                 }],
-                category: item.category,
-                subCategory: item.subCategory,
+                category: [{
+                    // id: category._id,
+                    name: category.name,
+                }],
+                subCategory: [{
+                    // id: subCategory._id,
+                    name: subCategory.name
+                }],
                 description: item.description,
                 price: item.price,
                 mfr: item.mfr,
@@ -133,13 +171,16 @@ const importData = async (req, res) => {
 
             // Save the document to MongoDB
             await newData.save();
+
+
+
         }
 
         res.json({ message: 'Data imported successfully' });
 
     } catch (error) {
-        // console.log(error)
-        res.status(500).send({message: 'Error saving data, Some required fields are missing', error: error.message});
+        console.log(error)
+        res.status(500).send({ message: 'Error saving data, Some required fields are missing', error: error.message });
     }
 }
 

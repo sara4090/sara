@@ -91,7 +91,7 @@ router.get('/fetchSingleOrder/:id', fetchUser, fetchSingleOrder)
 router.patch('/orderStatus/:id', orderStatus)
 
 //CATEGORY ROUTES
-router.post('/addCategory', fetchUser, categoryValidation, addCategory);
+router.post('/addCategory', fetchUser, addCategory);
 router.get('/fetchCategories', fetchCategories)
 router.post('/addSubCategory/:id', fetchUser, categoryValidation, addSubCategory);
 router.get('/fetchSubCategories/:id', fetchUser, fetchSubCategories)
@@ -115,7 +115,7 @@ router.post('/confirmPayment', fetchUser, confirmPaymentMethod)
 router.post('/webhook', express.raw({type: 'application/json'}), stripeWebhook)
 
 //Submit form
-router.post('/submitForm',rfqValidations, submitRfq)
+router.post('/submitForm', submitRfq)
 router.post('/sendAttachment', upload.single('file'), sendAttachment)
 router.get('/rqfHistory', RFQhistory)
 module.exports = router;

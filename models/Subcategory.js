@@ -3,7 +3,6 @@ const subCatSchema = new mongoose.Schema({
    catId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Category',
-     required: true
    },
     name: {
         type: 'String',
