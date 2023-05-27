@@ -13,15 +13,15 @@ const fetchSingleOrder = async (req, res) => {
     }
 
     const userId = order.user;
-    const user = await User.findById({ _id: userId });
-    if (!user) {
+    if (!userId) {
       return res.status(404).send({messagw: "User not found"});
     }
+    const user = await User.findById({ _id: userId });
 
-    const productIds = order.product.map((product) => product.productId);
+    const productIds = order.products.map((product) => product.productId);
     const products = await Product.find({ _id: { $in: productIds } });
 
-    return res.status(200).json({ order, user, products });
+    return res.status(200).json({ order, user });
   } catch (error) {
     console.error(error);
     return res.status(500).send({message: "Internal Server Error"});
