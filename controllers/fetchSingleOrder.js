@@ -21,7 +21,7 @@ const fetchSingleOrder = async (req, res) => {
     const productIds = order.products.map((product) => product.productId);
     const products = await Product.find({ _id: { $in: productIds } });
 
-    return res.status(200).json({ order, user });
+    return res.status(200).json({ order, user, products });
   } catch (error) {
     console.error(error);
     return res.status(500).send({message: "Internal Server Error"});
