@@ -23,7 +23,7 @@ const customerSchema = new Schema({
   },
   created_at:{
     type: Date,
-    default: Date.now
+    default: Date.now()
   }
 
 });
@@ -101,7 +101,6 @@ const createOrder = async (customer, data) => {
 
     const newSale = new Sale({
       orderId: savedOrder._id,
-      // Add more fields as needed
     });
 
     const savedSale = await newSale.save();
@@ -165,4 +164,4 @@ const stripeWebhook = async (req, res) => {
   res.send().end();
 };
 
-module.exports = { stripeWebhook };
+module.exports = { stripeWebhook , Customer};
