@@ -20,7 +20,12 @@ const customerSchema = new Schema({
     cart: String,
     userId: String,
     name: String
+  },
+  created_at:{
+    type: Date,
+    default: Date.now
   }
+
 });
 
 
@@ -67,8 +72,8 @@ const createOrder = async (customer, data) => {
 
   const newCustomer = new Customer({
     customerId: customer.id,
-    name: customer.name,
-    address: customer.address,
+    name: customer.name || 'N/A',
+    address: customer.address || 'N/A',
     metadata: {
       cart: customer.metadata.cart,
       userId: customer.metadata.userId,
@@ -145,6 +150,8 @@ const stripeWebhook = async (req, res) => {
     try {
       const customer = await stripe.customers.retrieve(data.customer);
       console.log('Customer:', customer);
+      console.log('Customer Name:', customer.name);
+      console.log('Customer Address:', customer.address);
       console.log('Data:', data);
       const savedOrder = await createOrder(customer, data);
       return res.json(savedOrder);
