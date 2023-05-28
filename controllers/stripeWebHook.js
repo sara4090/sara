@@ -1,5 +1,41 @@
-const Order = require('../models/Order');
+const mongoose = require('mongoose');
+const Schema = mongoose.Schema;
 require('dotenv').config();
+
+const productSchema = new Schema({
+  name: String,
+  price: Number,
+  quantity: Number
+});
+
+
+const orderSchema = new Schema({
+  userId: String,
+  customerId: String,
+  products: [productSchema],
+  totalAmount: Number,
+  price: Number,
+  mfr: String,
+  mfrNo: String,
+  payment: {
+    paymentIntentId: String,
+    status: String
+  }
+});
+
+const customerSchema = new Schema({
+  customerId: String,
+  metadata: {
+    cart: String,
+    userId: String
+  }
+});
+
+
+const Product = mongoose.model('Product', productSchema);
+const Order = mongoose.model('Order', orderSchema);
+const Customer = mongoose.model('Customer', customerSchema);
+
 
 const createOrder = async (customer, data) => {
   const items = JSON.parse(customer.metadata.cart);
@@ -7,13 +43,24 @@ const createOrder = async (customer, data) => {
   const products = items.map(item => ({
     name: item.name,
     price: item.price,
-    quantity: item.quantity
+    quantity: item.quantity,
+   
   }));
 
   const payment = {
     paymentIntentId: data.payment_intent,
     status: data.payment_status
   };
+  console.log(payment)
+
+  const newCustomer = new Customer({
+    customerId: customer.id,
+    metadata: {
+      cart: customer.metadata.cart,
+      userId: customer.metadata.userId
+    }
+  });
+  const savedCustomer = await newCustomer.save();
 
   const newOrder = new Order({
     userId: customer.metadata.userId,
@@ -23,13 +70,17 @@ const createOrder = async (customer, data) => {
     price: data.amount_total,
     mfr: data.mfr,
     mfrNo: data.mfrNo,
-    payment: payment
+    payment: payment,
+    customer: savedCustomer
   });
 
   try {
+    
+
     const savedOrder = await newOrder.save();
-    console.log('Order saved:', savedOrder);
-    return savedOrder;
+   // console.log('Order saved:', savedOrder,savedCustomer );
+    return { savedOrder, savedCustomer };
+
   } catch (error) {
     console.error('Error saving order:', error);
     throw error;

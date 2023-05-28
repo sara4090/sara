@@ -23,8 +23,6 @@ const addBlog = async (req, res) => {
       secure: true
     });
 
-
-
     const { images } = req.files;
     let imagesArray;
 
@@ -43,14 +41,16 @@ const addBlog = async (req, res) => {
         public_id: upload.public_id,
         url: upload.secure_url,
       }));
-    }
+
+      // imagesArray = JSON.stringify(imagesArray);
+    };
 
 
 
     const blog = new Blog({
       user: req.user.id,
-      title: req.body.title,
-      description: req.body.description,
+      title: String(req.body.title),
+      description: String(req.body.description),
       images: imagesArray,
       author: req.body.author
     });
