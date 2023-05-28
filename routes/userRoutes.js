@@ -56,6 +56,7 @@ const { submitRfq } = require('../controllers/RQFformSubmission');
 const { stripeWebhook } = require('../controllers/stripeWebHook');
 const { sendAttachment } = require('../controllers/RFQexcelMail');
 const { RFQhistory } = require('../controllers/RFQhistory');
+const { getSalesPerMonth } = require('../controllers/salesPerMonth');
 
 //USER`S ROUTES
 router.post('/signup', signupValidation, signup);
@@ -113,6 +114,7 @@ router.get('/fetchCartStatus', fetchUser, fetchCartStatus)
 router.post('/addStripePayment', fetchUser, addStripePaymentMethod)
 router.post('/confirmPayment', fetchUser, confirmPaymentMethod)
 router.post('/webhook', express.raw({type: 'application/json'}), stripeWebhook)
+router.get('/salesPerMonth', getSalesPerMonth)
 
 //Submit form
 router.post('/submitForm', submitRfq)

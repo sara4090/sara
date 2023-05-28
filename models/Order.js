@@ -16,8 +16,8 @@ const orderSchema = new mongoose.Schema({
     },
     quantity: { type: Number, required: true, min: 1 },
     price: { type: Number, required: true, },
-    mfr: { type: Object, },
-    mfrNo: { type: Number, }
+    mfr: { type: String, },
+    mfrNo: { type: String, }
   }],
   date: { type: Date, default: Date.now, required: true },
   totalAmount: { type: Number, min: 0 },

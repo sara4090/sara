@@ -1,15 +1,17 @@
 const mongoose = require('mongoose');
+const Schema = mongoose.Schema;
 
-const saleSchema = new mongoose.Schema({
-  amount: {
-    type: Number,
-    // required: true
+const saleSchema = new Schema({
+ 
+  orderId: {
+    type: Schema.Types.ObjectId,
+    ref: 'Order'
   },
-  date: {
+  saleDate: {
     type: Date,
-    required: true,
     default: Date.now
-  }
+  },
+ 
 });
 
 const Sale = mongoose.model('Sale', saleSchema);

@@ -1,11 +1,26 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
+const Sale = require('../models/Sale')
 require('dotenv').config();
 
 const productSchema = new Schema({
   name: String,
   price: Number,
-  quantity: Number
+  quantity: Number,
+  mfr: String,
+  mfrNo: String,
+
+});
+
+const customerSchema = new Schema({
+  customerId: String,
+  name: String,
+  address: String,
+  metadata: {
+    cart: String,
+    userId: String,
+    name: String
+  }
 });
 
 
@@ -20,15 +35,9 @@ const orderSchema = new Schema({
   payment: {
     paymentIntentId: String,
     status: String
-  }
-});
+  },
+  customer: [customerSchema]
 
-const customerSchema = new Schema({
-  customerId: String,
-  metadata: {
-    cart: String,
-    userId: String
-  }
 });
 
 
@@ -44,7 +53,9 @@ const createOrder = async (customer, data) => {
     name: item.name,
     price: item.price,
     quantity: item.quantity,
-   
+    mfr: data.mfr,
+    mfrNo: data.mfrNo,
+
   }));
 
   const payment = {
@@ -53,11 +64,15 @@ const createOrder = async (customer, data) => {
   };
   console.log(payment)
 
+
   const newCustomer = new Customer({
     customerId: customer.id,
+    name: customer.name,
+    address: customer.address,
     metadata: {
       cart: customer.metadata.cart,
-      userId: customer.metadata.userId
+      userId: customer.metadata.userId,
+      name: customer.metadata.name
     }
   });
   const savedCustomer = await newCustomer.save();
@@ -75,11 +90,18 @@ const createOrder = async (customer, data) => {
   });
 
   try {
-    
+
 
     const savedOrder = await newOrder.save();
-   // console.log('Order saved:', savedOrder,savedCustomer );
-    return { savedOrder, savedCustomer };
+
+    const newSale = new Sale({
+      orderId: savedOrder._id,
+      // Add more fields as needed
+    });
+
+    const savedSale = await newSale.save();
+    // console.log('Order saved:', savedOrder,savedCustomer );
+    return { savedOrder, savedCustomer, savedSale };
 
   } catch (error) {
     console.error('Error saving order:', error);
