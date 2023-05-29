@@ -1,144 +1,50 @@
-const mongoose = require('mongoose');
-const Schema = mongoose.Schema;
-const Sale = require('../models/Sale')
-require('dotenv').config();
+const express = require('express');
+const app = express();
+const Order = require('../models/Order')
+const Sale = require('../models/Sale'); // Import the Sale model
 
-const productSchema = new Schema({
-  name: String,
-  price: Number,
-  quantity: Number,
-  mfr: String,
-  mfrNo: String,
+const stripe = require('stripe')(process.env.STRIPE_SECRET);
+require('./addStripePayment')
 
-});
-
-const customerSchema = new Schema({
-  customerId: String,
-  name: String,
-  address: String,
-  metadata: {
-    cart: String,
-    userId: String,
-  },
-  created_at: {
-    type: Date,
-    default: Date.now()
-  }
-
-});
-
-const paymentSchema = new Schema({
-  paymentIntentId: String,
-  status: String,
-});
-
-
-const orderSchema = new Schema({
-  userId: String,
-  customerId: String,
-  products: [productSchema],
-  totalAmount: Number,
-  price: Number,
-  mfr: String,
-  mfrNo: String,
-  payment:paymentSchema ,
-  customer: [customerSchema]
-
-});
-
-
-const Product = mongoose.model('Product', productSchema);
-const Order = mongoose.model('Order', orderSchema);
-const Customer = mongoose.model('Customer', customerSchema);
-const Payment = mongoose.model('Payment', paymentSchema);
-
-const createOrder = async (customer, data) => {
-  const items = JSON.parse(customer.metadata.cart);
-  console.log(customer)
- // console.log(customer.metadata.cart)
-
-  const products = items.map(item => ({
-    name: item.name,
-    price: item.price,
-    quantity: item.quantity,
-    mfr: data.mfr,
-    mfrNo: data.mfrNo,
-  }));
-
-  const payment = {
-    paymentIntentId: data.payment_intent,
-    status: data.payment_status
-  };
-
-  const customerData = {
-    customerId: customer.id,
-   
-    metadata: {
-      cart: customer.metadata.cart,
-      userId: customer.metadata.userId,
-    }
-  };
-
-  // Update customer name and address if available in the webhook data
-  if (data.customer_details && data.customer_details.name) {
-    customerData.name = data.customer_details.name;
-  }
-  if (data.customer_details && data.customer_details.address) {
-    customerData.address = data.customer_details.address;
-  }
-
-  const newCustomer = new Customer({
-    customerId: customer.id,
-    // name: customer.name, 
-    metadata: {
-      cart: customer.metadata.cart,
-    
-    }
-  });
-  const savedCustomer = await newCustomer.save();
-
-  const newPayment = new Payment({payment});
-  const savedPayment = await newPayment.save();
+//Create order
+const createOrder = async (customer, data)=> {
+  const items = JSON.parse(customer.metadata.cart)
 
   const newOrder = new Order({
     userId: customer.metadata.userId,
     customerId: data.customer,
-    products: products,
-    totalAmount: data.amount_subtotal,
-    price: data.amount_total,
-    mfr: data.mfr,
-    mfrNo: data.mfrNo,
-    payment: savedPayment,
-    customer: customerData
+    pamentIntentId: data.payment_intent,
+    products: items,
+    subtotal: data.amount_subtotal,
+    total: data.amount_total,
+    shipping: data.customer_details,
+    payment_status: data.payment_status,
+    customer: newCustomer
+  })
+  try {
+   const savedOrder =  await newOrder.save()
+   console.log('processed order:', savedOrder)
+
+   // Create a new Sale based on the Order data
+   const newSale = new Sale({
+    userId: savedOrder.userId,
+    orderId: savedOrder._id,
+    total: savedOrder.total,
+    // Include other relevant sale data here
   });
 
-  try {
-    const savedOrder = await newOrder.save();
-
-    const newSale = new Sale({
-      orderId: savedOrder._id,
-    });
-
-    const savedSale = await newSale.save();
-
-    return { savedOrder, savedCustomer, savedSale };
+  const savedSale = await newSale.save();
+  console.log('generated sale:', savedSale);
   } catch (error) {
-    console.error('Error saving order:', error);
-    throw error;
+    console.log(error)
   }
-};
-
-
-
-const stripe = require('stripe')(process.env.STRIPE_SECRET);
-
+}
 // This is your Stripe CLI webhook secret for testing your endpoint locally.
+//const endpointSecret = "whsec_d35bf67d2b8c9ef7bee87fe0c353e76e045d58abc930079985445ae4bcfb2c35";
 let endpointSecret;
-// endpointSecret = "whsec_d35bf67d2b8c9ef7bee87fe0c353e76e045d58abc930079985445ae4bcfb2c35";
 
-const stripeWebhook = async (req, res) => {
-  const sig = req.headers['stripe-signature'];
-
+const stripeWebhook = (request, response) => {
+  const sig = request.headers['stripe-signature'];
   let data;
   let eventType;
 
@@ -146,37 +52,33 @@ const stripeWebhook = async (req, res) => {
     let event;
 
     try {
-      event = stripe.webhooks.constructEvent(req.body, sig, endpointSecret);
-      console.log('Webhook verified');
+      event = stripe.webhooks.constructEvent(request.body, sig, endpointSecret);
+      console.log('webhook verified.')
     } catch (err) {
-      console.error('Webhook verification error:', err);
-      return res.status(400).send(`Webhook Error: ${err.message}`);
+      response.status(400).send(`Webhook Error: ${err.message}`);
+      return;
     }
-
     data = event.data.object;
-    eventType = event.type;
+    eventType = event.type
   } else {
-    data = req.body.data.object;
-    eventType = req.body.type;
+    data = request.body.data.object;
+    eventType = request.body.type;
   }
 
   // Handle the event
-  if (eventType === 'checkout.session.completed') {
-    try {
-      const customer = await stripe.customers.retrieve(data.customer);
-
-      console.log(customer.email);
-      console.log(customer.name);
-    
-      const savedOrder = await createOrder(customer, data);
-      return res.json(savedOrder);
-    } catch (error) {
-      console.error('Error handling webhook event:', error.message);
-      return res.status(500).send('Internal Server Error');
-    }
+  if (eventType === "checkout.session.completed") {
+    stripe.customers.retrieve(data.customer).then((customer) => {
+      console.log(customer)
+      console.log('data:', data)
+      createOrder(customer, data)
+    }).catch((error) => {
+      console.log(error)
+    })
   }
 
-  res.send().end();
+  // Return a 200 response to acknowledge receipt of the event
+  response.send().end;
+
 };
 
-module.exports = { stripeWebhook, Customer };
+module.exports = { stripeWebhook }

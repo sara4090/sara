@@ -10,6 +10,10 @@ const addStripePaymentMethod = async (req, res) => {
       email,
       description,
       address,
+      metadata:{
+        userId: req.body.userId,
+        cart: JSON.stringify(req.body.cartItems)
+      }
     });
 
     const savedCustomer = new Customer(customer)
@@ -112,6 +116,10 @@ console.log(customer.id)
   }
 
 };
+
+
+
+
 
 
 module.exports = { addStripePaymentMethod }
