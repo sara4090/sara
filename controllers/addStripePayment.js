@@ -1,16 +1,22 @@
-
+const Customer = require('../models/Customer')
 require('dotenv').config();
 const stripe = require('stripe')(process.env.STRIPE_SECRET);
 
 const addStripePaymentMethod = async (req, res) => {
+  const { name, email, description, address } = req.body;
 
   const customer = await stripe.customers.create({
-    metadata: {
-      userId: req.user.userId,
-      cart: JSON.stringify(req.body.cartItems),
-      date: new Date().toISOString()
-    }
-  })
+    name,
+      email,
+      description,
+      address,
+    });
+
+    const savedCustomer = new Customer(customer)
+    const newCustomer = savedCustomer.save();
+console.log(customer.id)  
+  res.json(customer);
+
   const line_items = req.body.cartItems.map((item) => {
     const images = Array.isArray(item.images) ? item.images : [item.images];
    // console.log(req.body.cartItems)
@@ -102,9 +108,10 @@ const addStripePaymentMethod = async (req, res) => {
     console.log(session)
 
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    //res.status(500).json({ error: error.message });
   }
 
 };
+
 
 module.exports = { addStripePaymentMethod }

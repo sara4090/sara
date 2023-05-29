@@ -3,7 +3,14 @@ const customerSchema = mongoose.Schema({
 
     customerId: String,
     name: { type: String },
-    address: { type: String },
+    address: {
+        line1: { type: String },
+        line2:{ type: String },
+        city: { type: String },
+        state: { type: String },
+        postal_code:{ type: String },
+        country: { type: String }
+      },
     metadata: {
         cart: String,
         userId: String,

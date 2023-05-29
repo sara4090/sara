@@ -72,12 +72,10 @@ const createOrder = async (customer, data) => {
 
   const customerData = {
     customerId: customer.id,
-     name: customer.name,
-    address: customer.address,
+   
     metadata: {
       cart: customer.metadata.cart,
       userId: customer.metadata.userId,
-      name: customer.metadata.name
     }
   };
 
@@ -92,11 +90,9 @@ const createOrder = async (customer, data) => {
   const newCustomer = new Customer({
     customerId: customer.id,
     name: customer.name, 
-    address: customer.address,
     metadata: {
       cart: customer.metadata.cart,
-      userId: customer.metadata.userId,
-      name: customer.metadata.name
+    
     }
   });
   const savedCustomer = await newCustomer.save();
@@ -171,10 +167,7 @@ const stripeWebhook = async (req, res) => {
 
       console.log(customer.email);
       console.log(customer.name);
-      // console.log('Customer:', customer);
-     // console.log('Customer Name:', customer.name);
-      // console.log('Customer Address:', customer.address);
-      // console.log('Data:', data);
+    
       const savedOrder = await createOrder(customer, data);
       return res.json(savedOrder);
     } catch (error) {
@@ -183,7 +176,6 @@ const stripeWebhook = async (req, res) => {
     }
   }
 
-  // Return a 200 response to acknowledge receipt of the event
   res.send().end();
 };
 
