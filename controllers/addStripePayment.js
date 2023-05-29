@@ -15,7 +15,7 @@ const addStripePaymentMethod = async (req, res) => {
     const savedCustomer = new Customer(customer)
     const newCustomer = savedCustomer.save();
 console.log(customer.id)  
-  res.json(customer);
+  //res.json(customer);
 
   const line_items = req.body.cartItems.map((item) => {
     const images = Array.isArray(item.images) ? item.images : [item.images];
