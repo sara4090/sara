@@ -89,7 +89,7 @@ const createOrder = async (customer, data) => {
 
   const newCustomer = new Customer({
     customerId: customer.id,
-    name: customer.name, 
+    // name: customer.name, 
     metadata: {
       cart: customer.metadata.cart,
     
