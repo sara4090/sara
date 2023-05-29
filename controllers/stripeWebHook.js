@@ -19,13 +19,17 @@ const customerSchema = new Schema({
   metadata: {
     cart: String,
     userId: String,
-    name: String
   },
-  created_at:{
+  created_at: {
     type: Date,
     default: Date.now()
   }
 
+});
+
+const paymentSchema = new Schema({
+  paymentIntentId: String,
+  status: String,
 });
 
 
@@ -37,10 +41,7 @@ const orderSchema = new Schema({
   price: Number,
   mfr: String,
   mfrNo: String,
-  payment: {
-    paymentIntentId: String,
-    status: String
-  },
+  payment:paymentSchema ,
   customer: [customerSchema]
 
 });
@@ -49,10 +50,12 @@ const orderSchema = new Schema({
 const Product = mongoose.model('Product', productSchema);
 const Order = mongoose.model('Order', orderSchema);
 const Customer = mongoose.model('Customer', customerSchema);
-
+const Payment = mongoose.model('Payment', paymentSchema);
 
 const createOrder = async (customer, data) => {
   const items = JSON.parse(customer.metadata.cart);
+  console.log(customer)
+ // console.log(customer.metadata.cart)
 
   const products = items.map(item => ({
     name: item.name,
@@ -60,20 +63,36 @@ const createOrder = async (customer, data) => {
     quantity: item.quantity,
     mfr: data.mfr,
     mfrNo: data.mfrNo,
-
   }));
 
   const payment = {
     paymentIntentId: data.payment_intent,
     status: data.payment_status
   };
-  console.log(payment)
 
+  const customerData = {
+    customerId: customer.id,
+     name: customer.name,
+    address: customer.address,
+    metadata: {
+      cart: customer.metadata.cart,
+      userId: customer.metadata.userId,
+      name: customer.metadata.name
+    }
+  };
+
+  // Update customer name and address if available in the webhook data
+  if (data.customer_details && data.customer_details.name) {
+    customerData.name = data.customer_details.name;
+  }
+  if (data.customer_details && data.customer_details.address) {
+    customerData.address = data.customer_details.address;
+  }
 
   const newCustomer = new Customer({
     customerId: customer.id,
-    name: customer.name || 'N/A',
-    address: customer.address || 'N/A',
+    name: customer.name, 
+    address: customer.address,
     metadata: {
       cart: customer.metadata.cart,
       userId: customer.metadata.userId,
@@ -81,6 +100,9 @@ const createOrder = async (customer, data) => {
     }
   });
   const savedCustomer = await newCustomer.save();
+
+  const newPayment = new Payment({payment});
+  const savedPayment = await newPayment.save();
 
   const newOrder = new Order({
     userId: customer.metadata.userId,
@@ -90,13 +112,11 @@ const createOrder = async (customer, data) => {
     price: data.amount_total,
     mfr: data.mfr,
     mfrNo: data.mfrNo,
-    payment: payment,
-    customer: savedCustomer
+    payment: savedPayment,
+    customer: customerData
   });
 
   try {
-
-
     const savedOrder = await newOrder.save();
 
     const newSale = new Sale({
@@ -104,14 +124,14 @@ const createOrder = async (customer, data) => {
     });
 
     const savedSale = await newSale.save();
-    // console.log('Order saved:', savedOrder,savedCustomer );
-    return { savedOrder, savedCustomer, savedSale };
 
+    return { savedOrder, savedCustomer, savedSale };
   } catch (error) {
     console.error('Error saving order:', error);
     throw error;
   }
 };
+
 
 
 const stripe = require('stripe')(process.env.STRIPE_SECRET);
@@ -148,10 +168,13 @@ const stripeWebhook = async (req, res) => {
   if (eventType === 'checkout.session.completed') {
     try {
       const customer = await stripe.customers.retrieve(data.customer);
-      console.log('Customer:', customer);
-      console.log('Customer Name:', customer.name);
-      console.log('Customer Address:', customer.address);
-      console.log('Data:', data);
+
+      console.log(customer.email);
+      console.log(customer.name);
+      // console.log('Customer:', customer);
+     // console.log('Customer Name:', customer.name);
+      // console.log('Customer Address:', customer.address);
+      // console.log('Data:', data);
       const savedOrder = await createOrder(customer, data);
       return res.json(savedOrder);
     } catch (error) {
@@ -164,4 +187,4 @@ const stripeWebhook = async (req, res) => {
   res.send().end();
 };
 
-module.exports = { stripeWebhook , Customer};
+module.exports = { stripeWebhook, Customer };
