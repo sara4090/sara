@@ -19,7 +19,7 @@ const sendVerificationEmail = async (name, email, userId) => {
             from: process.env.EMAIL,
             to: email,
             subject: 'Verify your Email',
-            html: `<p>Hi ${name}, Hope you are doing well. Please follow this link to <a href = "http://localhost:8000/api/v1/verify?id=${userId}"> verify your email </a></p>`
+            html: `<p>Hi ${name}, Hope you are doing well. Please follow this link to <a href = "http://15.206.128.120:8000/api/v1/verify?id=${userId}"> verify your email </a></p>`
         }
 
         transporter.sendMail(mailOtions, (err, info) => {
