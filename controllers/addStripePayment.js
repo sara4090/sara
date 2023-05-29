@@ -7,23 +7,23 @@ const addStripePaymentMethod = async (req, res) => {
 
   const customer = await stripe.customers.create({
     name,
-      email,
-      description,
-      address,
-      metadata:{
-        userId: req.body.userId,
-        cart: JSON.stringify(req.body.cartItems)
-      }
-    });
+    email,
+    description,
+    address,
+    metadata: {
+      userId: req.body.userId,
+      cart: JSON.stringify(req.body.cartItems)
+    }
+  });
 
-    const savedCustomer = new Customer(customer)
-    const newCustomer = savedCustomer.save();
-console.log(customer.id)  
+  const savedCustomer = new Customer(customer)
+  const newCustomer = savedCustomer.save();
+  console.log(customer.id)
   //res.json(customer);
 
   const line_items = req.body.cartItems.map((item) => {
     const images = Array.isArray(item.images) ? item.images : [item.images];
-   // console.log(req.body.cartItems)
+    // console.log(req.body.cartItems)
     const customFields = {
       mfr: item.mfr,
       mfrNo: item.mfrNo
@@ -38,7 +38,7 @@ console.log(customer.id)
           description: item.desc,
           metadata: {
             id: item.id,
-           ...customFields
+            ...customFields
           },
 
         },
