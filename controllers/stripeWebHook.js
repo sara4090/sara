@@ -1,10 +1,24 @@
-const express = require('express');
-const app = express();
+const mongoose = require('mongoose');
+const Schema = mongoose.Schema;
 const Order = require('../models/Order')
-const Sale = require('../models/Sale'); // Import the Sale model
+const Sale = require('../models/Sale'); 
 
 const stripe = require('stripe')(process.env.STRIPE_SECRET);
 require('./addStripePayment')
+
+const productSchema = new Schema({
+  name: String,
+  price: Number,
+  quantity: Number,
+  mfr: String,
+  mfrNo: String,
+
+});
+const paymentSchema = new Schema({
+  paymentIntentId: String,
+  status: String,
+});
+
 
 //Create order
 const createOrder = async (customer, data)=> {
@@ -19,11 +33,12 @@ const createOrder = async (customer, data)=> {
     total: data.amount_total,
     shipping: data.customer_details,
     payment_status: data.payment_status,
-    customer: newCustomer
-  })
+     payment: [paymentSchema]
+    
+  });
   try {
    const savedOrder =  await newOrder.save()
-   console.log('processed order:', savedOrder)
+   console.log('Processed order:', savedOrder)
 
    // Create a new Sale based on the Order data
    const newSale = new Sale({

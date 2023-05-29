@@ -108,7 +108,7 @@ const addStripePaymentMethod = async (req, res) => {
       cancel_url: `http://localhost:3000/cart`
 
     });
-    res.send({ url: session.url })
+    res.send({ session })
     console.log(session)
 
   } catch (error) {
