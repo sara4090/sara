@@ -28,6 +28,7 @@ const { updateBlog } = require('../controllers/updateBlog');
 const { deleteBlog } = require('../controllers/deleteBlog');
 const { adminVerifyerifyMail } = require('../mails/adminVerifyMail');
 const { customerLastFewMonths } = require('../controllers/customerLastFewMonths');
+const { totalCustomers } = require('../controllers/totalCustomers');
 
 router.post('/signup', adminSignupValidation, adminSignup)
 router.get('/verify', adminVerifyerifyMail)
@@ -56,5 +57,6 @@ router.delete('/deleteBlog/:id', fetchUser, deleteBlog)
 
 //Customers
 router.get('/customers', customerLastFewMonths)
+router.get('/totalCustomers', totalCustomers)
 
 module.exports = router;
