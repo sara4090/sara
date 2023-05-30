@@ -117,7 +117,6 @@ const addStripePaymentMethod = async (req, res) => {
   }
 };
 
-
 // Stripe Webhook API
 const stripeWebhook = async (req, res) => {
   const sig = req.headers['stripe-signature'];

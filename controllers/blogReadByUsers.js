@@ -8,4 +8,4 @@ const blogReadByUsers = (req, res) => {
 };
 
 
-module.exports = { blogReadByUsers }
+module.exports = { blogReadByUsers };

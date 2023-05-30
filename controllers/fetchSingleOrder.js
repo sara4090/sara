@@ -4,27 +4,24 @@ const Product = require("../models/Product");
 
 const fetchSingleOrder = async (req, res) => {
   try {
-    
-    const order = await Order.findById({ _id: req.params.id.toString() });
-    console.log(order)
+    const orderId = req.params.id;
+
+    const order = await Order.findById(orderId);
 
     if (!order) {
-      return res.status(404).send({message: "Order not found"});
+      return res.status(404).json({ message: "Order not found" });
     }
 
     const userId = order.user;
-    if (!userId) {
-      return res.status(404).send({messagw: "User not found"});
-    }
-    const user = await User.findById({ _id: userId });
+    const user = await User.findById(userId);
 
-    const productIds = order.products.map((product) => product.productId);
-    const products = await Product.find({ _id: { $in: productIds } });
+    // const productIds = order.products.map((product) => product.productId);
+    // const products = await Product.find({ _id: { $in: productIds } });
 
-    return res.status(200).json({ order, user, products });
+    return res.status(200).json({ order, user });
   } catch (error) {
     console.error(error);
-    return res.status(500).send({message: "Internal Server Error"});
+    return res.status(500).json({ message: "Internal Server Error" });
   }
 };
 
