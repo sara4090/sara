@@ -58,8 +58,8 @@ const createOrder = async (customer, data)=> {
 //const endpointSecret = "whsec_d35bf67d2b8c9ef7bee87fe0c353e76e045d58abc930079985445ae4bcfb2c35";
 let endpointSecret;
 
-const stripeWebhook = (request, response) => {
-  const sig = request.headers['stripe-signature'];
+const stripeWebhook = (req, res) => {
+  const sig = req.headers['stripe-signature'];
   let data;
   let eventType;
 
@@ -67,17 +67,17 @@ const stripeWebhook = (request, response) => {
     let event;
 
     try {
-      event = stripe.webhooks.constructEvent(request.body, sig, endpointSecret);
+      event = stripe.webhooks.constructEvent(req.body, sig, endpointSecret);
       console.log('webhook verified.')
     } catch (err) {
-      response.status(400).send(`Webhook Error: ${err.message}`);
+      res.status(400).send(`Webhook Error: ${err.message}`);
       return;
     }
     data = event.data.object;
     eventType = event.type
   } else {
-    data = request.body.data.object;
-    eventType = request.body.type;
+    data = req.body.data.object;
+    eventType = req.body.type;
   }
 
   // Handle the event
@@ -91,8 +91,8 @@ const stripeWebhook = (request, response) => {
     })
   }
 
-  // Return a 200 response to acknowledge receipt of the event
-  response.send().end;
+  // Return a 200 res to acknowledge receipt of the event
+  res.send().end;
 
 };
 

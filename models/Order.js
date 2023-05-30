@@ -1,5 +1,7 @@
 const mongoose = require('mongoose');
 
+
+
 const orderSchema = new mongoose.Schema({
   userId: { type: String },
   customerId: { type: String },
@@ -12,19 +14,18 @@ const orderSchema = new mongoose.Schema({
       brand: { type: String },
       image: { type: String },
       quantity: { type: Number },
-      desc: { type: String }
+      desc: { type: String },
+      mfr: { type: String },
+      mfrNo: { type: String },
 
     }],
   date: { type: Date, default: Date.now(), required: true },
-  subtotal: { type: Number, min: 0 },
-  total: { type: Number, min: 0 },
+  amount_subtotal: { type: Number, },
+  amount_total: { type: Number, },
   shipping: { type: Object, },
   delivery_status: { type: String, default: 'pending' },
-  payment_status: { type: String, }
-
-
-
-
+  payment_status: { type: String, },
+  customer: {type: Object,}
 });
 
 const Order = mongoose.model('order', orderSchema);
