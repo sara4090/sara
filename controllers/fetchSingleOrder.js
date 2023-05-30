@@ -4,7 +4,6 @@ const Product = require("../models/Product");
 
 const fetchSingleOrder = async (req, res) => {
   const customerId = req.params.customerId;
-  console.log(customerId)
   
   Order.find({ customerId })
     .then(orders => {
