@@ -3,7 +3,8 @@ const mongoose = require('mongoose');
 
 
 const orderSchema = new mongoose.Schema({
-  userId: { type: String },
+  userId: { type: mongoose.Schema.Types.ObjectId, ref: 'users' },
+  custId: { type: mongoose.Schema.Types.ObjectId, ref: 'users' },
   customerId: { type: String },
   paymentIntentId: { type: String },
   products: [
@@ -25,7 +26,7 @@ const orderSchema = new mongoose.Schema({
   shipping: { type: Object, },
   delivery_status: { type: String, default: 'pending' },
   payment_status: { type: String, },
-  customer: {type: Object,}
+  customer: { type: Object, }
 });
 
 const Order = mongoose.model('order', orderSchema);

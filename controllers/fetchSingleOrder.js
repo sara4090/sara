@@ -15,8 +15,6 @@ const fetchSingleOrder = async (req, res) => {
     const userId = order.user;
     const user = await User.findById(userId);
 
-    // const productIds = order.products.map((product) => product.productId);
-    // const products = await Product.find({ _id: { $in: productIds } });
 
     return res.status(200).json({ order, user });
   } catch (error) {
