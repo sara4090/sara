@@ -21,6 +21,7 @@ const blogSchema = Schema({
 
   author: { type: String, default: "Anonymous", required: true },
   date: { type: Date, default: Date.now, required: true },
+  views: { type: Number, default: 0, },
 
 });
 const Blog = new mongoose.model('blog', blogSchema);

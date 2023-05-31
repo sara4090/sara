@@ -58,6 +58,8 @@ const addBlog = async (req, res) => {
     await blog.save();
 
     res.send({ message: "Your blog added successfully", blog });
+    // Increment blog views
+    await Blog.updateOne({ _id: blog._id }, { $inc: { views: 1 } });
   } catch (error) {
     console.log(error);
     res.status(500).json({ error: error.message });
