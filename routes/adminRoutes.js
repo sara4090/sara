@@ -29,7 +29,6 @@ const { deleteBlog } = require('../controllers/deleteBlog');
 const { adminVerifyerifyMail } = require('../mails/adminVerifyMail');
 const { customerLastFewMonths } = require('../controllers/customerLastFewMonths');
 const { totalCustomers } = require('../controllers/totalCustomers');
-const { getViews, setViews } = require('../controllers/blogReadByUsers');
 
 router.post('/signup', adminSignupValidation, adminSignup)
 router.get('/verify', adminVerifyerifyMail)
@@ -55,8 +54,7 @@ router.get('/fetchBlogs', fetchUser, fetchBlogs)
 router.get('/fetchSingleBlog/:id', fetchUser, fetchSingleBlog)
 router.patch('/updateBlog/:id', fetchUser, updateBlog)
 router.delete('/deleteBlog/:id', fetchUser, deleteBlog)
-router.get('/getViews', getViews)
-router.post('/setViews', setViews)
+
 
 //Customers
 router.get('/customers', customerLastFewMonths)
