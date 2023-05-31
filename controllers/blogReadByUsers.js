@@ -1,11 +1,19 @@
 const Blog = require('../models/Blog')
-let totalReads = 0;
+let totalViews = 0;
 
-const blogReadByUsers = (req, res) => {
 
-    totalReads++;
-    res.sendStatus(200).send( totalReads );
+const setViews = (req, res) => {
+    totalViews++;
+    res.json({ message: 'View count updated successfully.' });
+
+}
+
+
+
+const getViews = (req, res) => {
+
+    res.json({ totalViews });
+
 };
 
-
-module.exports = { blogReadByUsers };
+module.exports = { getViews, setViews };
