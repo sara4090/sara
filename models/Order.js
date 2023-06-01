@@ -5,6 +5,9 @@ const orderSchema = new mongoose.Schema({
   custId: { type: mongoose.Schema.Types.ObjectId, ref: 'users' },
   customerId: { type: String },
   paymentIntentId: { type: String },
+  name: { type: String },
+  email: { type: String },
+  address: { type: Object },
   products: [
     {
       id: { type: String },
