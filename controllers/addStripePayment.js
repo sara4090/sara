@@ -127,8 +127,8 @@ const addStripePaymentMethod = async (req, res) => {
       const savedSale = await newSale.save();
       console.log('generated sale:', savedSale);
 
-      console.log('Processed order:', savedOrder);
-      return savedOrder;
+      console.log('Processed order:', savedOrder, session);
+      return {savedOrder, url: session.url};
     };
     res.send({url: session.url });
     const savedOrder = await createOrder(session);
