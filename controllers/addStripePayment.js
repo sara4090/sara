@@ -91,48 +91,49 @@ const addStripePaymentMethod = async (req, res) => {
   res.send({ url: session.url });
 
   //console.log(session);
+  const data = req.body;
+  const createOrder = async (data) => {
+    console.log(data)
+
+    const items = req.body.cartItems;
+
+    const products = items.map(item => ({
+      name: item.name,
+      price: item.price,
+      quantity: item.quantity,
+      mfr: item.mfr,
+      mfrNo: item.mfrNo,
+    }));
+
+    const newOrder = new Order({
+      userId: req.user.userId,
+      pamentIntentId: data.payment_intent ? data.payment_intent.id : null,
+      products: products,
+      amount_subtotal: data.amount_subtotal,
+      amount_total: data.amount_total,
+      payment_status: data.payment_status,
+      name: name,
+      email: email,
+      address: address,
+    });
+
+    const savedOrder = await newOrder.save();
+
+    const newSale = new Sale({
+      orderId: savedOrder._id,
+      total: savedOrder.amount_total
+    });
+
+    const savedSale = await newSale.save();
+    console.log('generated sale:', savedSale);
+
+    console.log('Processed order:', savedOrder);
+  };
 
   const eventType = req.body.eventType;
   if (eventType === 'checkout.session.completed') {
     // Create order
-    const data = req.body;
-    const createOrder = async (data) => {
-      console.log(data)
-
-      const items = req.body.cartItems;
-
-      const products = items.map(item => ({
-        name: item.name,
-        price: item.price,
-        quantity: item.quantity,
-        mfr: item.mfr,
-        mfrNo: item.mfrNo,
-      }));
-
-      const newOrder = new Order({
-        userId: req.user.userId,
-        pamentIntentId: data.payment_intent ? data.payment_intent.id : null,
-        products: products,
-        amount_subtotal: data.amount_subtotal,
-        amount_total: data.amount_total,
-        payment_status: data.payment_status,
-        name: name,
-        email: email,
-        address: address,
-      });
-
-      const savedOrder = await newOrder.save();
-
-      const newSale = new Sale({
-        orderId: savedOrder._id,
-        total: savedOrder.amount_total
-      });
-
-      const savedSale = await newSale.save();
-      console.log('generated sale:', savedSale);
-
-      console.log('Processed order:', savedOrder);
-    };
+   
     //res.send({session});
     const savedOrder = await createOrder(data);
     return (savedOrder);
