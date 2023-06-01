@@ -88,7 +88,8 @@ const addStripePaymentMethod = async (req, res) => {
     success_url: `http://localhost:3000`,
     cancel_url: `http://localhost:3000/cart`
   });
-  
+  res.send({url: session.url });
+
     //console.log(session);
 
   const eventType = req.body.eventType;
@@ -130,10 +131,10 @@ const addStripePaymentMethod = async (req, res) => {
       console.log('Processed order:', savedOrder, session);
       return(session.url);
     };
-    res.send({session});
+    //res.send({session});
     const savedOrder = await createOrder(session);
-    const sessionUrl = session.url;
-    return res.json({ sessionUrl });
+    // const sessionUrl = session.url;
+    // return res.json({ sessionUrl });
 
    // return res.send({ savedOrder });
   }
