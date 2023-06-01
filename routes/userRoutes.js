@@ -50,7 +50,7 @@ const { deleteCategory } = require('../controllers/deleteCategory');
 //const { createPaymentIntent, handlePaymentStatus } = require('../controllers/addStripePay');
 // const { importData } = require('../data/importData');
 const { addStripePaymentMethod } = require('../controllers/addStripePayment');
-const { confirmPaymentMethod } = require('../controllers/confirmPaymentMethod');
+const { confirmPayment } = require('../controllers/addStripePayment');
 const { submitRfq } = require('../controllers/RQFformSubmission');
 // const { sendAttachMent } = require('../controllers/RFQAttachmentSubmission');
 const { stripeWebhook } = require('../controllers/addStripePayment');
@@ -111,8 +111,8 @@ router.get('/fetchCartStatus', fetchUser, fetchCartStatus)
 
 //PAYMENT
 
-router.post('/addStripePayment', fetchUser, addStripePaymentMethod)
-router.post('/confirmPayment', fetchUser, confirmPaymentMethod)
+router.post('/createPaymentIntent', fetchUser, addStripePaymentMethod)
+router.post('/confirmPayment', fetchUser, addStripePaymentMethod)
 // router.post('/webhook', express.raw({type: 'application/json'}), stripeWebhook)
 router.get('/salesLastFewMonth', getSalesPerMonth)
 
