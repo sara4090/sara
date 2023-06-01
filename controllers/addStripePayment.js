@@ -32,7 +32,7 @@ const addStripePaymentMethod = async (req, res) => {
     };
   });
 
-  const data = req.body;
+   const data = req.body;
   const createOrder = async (data) => {
     console.log(data)
 
@@ -46,6 +46,67 @@ const addStripePaymentMethod = async (req, res) => {
       mfrNo: item.mfrNo,
     }));
 
+
+
+    const session = await stripe.checkout.sessions.create({
+      payment_method_types: ['card'],
+      shipping_address_collection: {
+        allowed_countries: ['IN', 'PK', 'NP']
+      },
+      shipping_options: [
+        {
+          shipping_rate_data: {
+            type: 'fixed_amount',
+            fixed_amount: {
+              amount: 0,
+              currency: 'usd'
+            },
+            display_name: 'Free shipping',
+            delivery_estimate: {
+              minimum: {
+                unit: 'business_day',
+                value: 5
+              },
+              maximum: {
+                unit: 'business_day',
+                value: 7
+              }
+            }
+          }
+        },
+        {
+          shipping_rate_data: {
+            type: 'fixed_amount',
+            fixed_amount: {
+              amount: 1500,
+              currency: 'usd'
+            },
+            display_name: 'Next day air',
+            delivery_estimate: {
+              minimum: {
+                unit: 'business_day',
+                value: 1
+              },
+              maximum: {
+                unit: 'business_day',
+                value: 1
+              }
+            }
+          }
+        }
+      ],
+      phone_number_collection: {
+        enabled: true
+      },
+      billing_address_collection: 'required',
+      line_items,
+      mode: 'payment',
+      success_url: `http://localhost:3000`,
+      cancel_url: `http://localhost:3000/cart`,
+
+    });
+
+
     const newOrder = new Order({
       userId: req.user.userId,
       pamentIntentId: data.payment_intent ? data.payment_intent.id : null,
@@ -58,70 +119,13 @@ const addStripePaymentMethod = async (req, res) => {
       address: address,
     });
     const savedOrder = await newOrder.save();
+    res.json({ url: session.url });
+
+    //console.log(session);
 
 
-  const session = await stripe.checkout.sessions.create({
-    payment_method_types: ['card'],
-    shipping_address_collection: {
-      allowed_countries: ['IN', 'PK', 'NP']
-    },
-    shipping_options: [
-      {
-        shipping_rate_data: {
-          type: 'fixed_amount',
-          fixed_amount: {
-            amount: 0,
-            currency: 'usd'
-          },
-          display_name: 'Free shipping',
-          delivery_estimate: {
-            minimum: {
-              unit: 'business_day',
-              value: 5
-            },
-            maximum: {
-              unit: 'business_day',
-              value: 7
-            }
-          }
-        }
-      },
-      {
-        shipping_rate_data: {
-          type: 'fixed_amount',
-          fixed_amount: {
-            amount: 1500,
-            currency: 'usd'
-          },
-          display_name: 'Next day air',
-          delivery_estimate: {
-            minimum: {
-              unit: 'business_day',
-              value: 1
-            },
-            maximum: {
-              unit: 'business_day',
-              value: 1
-            }
-          }
-        }
-      }
-    ],
-    phone_number_collection: {
-      enabled: true
-    },
-    billing_address_collection: 'required',
-    line_items,
-    mode: 'payment',
-    success_url: `http://localhost:3000`,
-    cancel_url: `http://localhost:3000/cart`
-  });
-  
+    //res.send({ url: session.url });
 
-  //console.log(session);
- 
-
-    res.send({ url: session.url });
 
     const newSale = new Sale({
       orderId: savedOrder._id,
@@ -132,13 +136,13 @@ const addStripePaymentMethod = async (req, res) => {
     console.log('generated sale:', savedSale);
 
     console.log('Processed order:', savedOrder);
-  };
-
+    ;
+  }
   const eventType = req.body.eventType;
   if (eventType === 'checkout.session.completed') {
     // Create order
-   
-    //res.send({session});
+
+    // res.send({session});
     const savedOrder = await createOrder(data);
     return (savedOrder);
 
@@ -149,6 +153,7 @@ const addStripePaymentMethod = async (req, res) => {
   }
 
   res.send().end();
-};
+  ;
+}
 
 module.exports = { addStripePaymentMethod };
