@@ -113,7 +113,7 @@ router.get('/fetchCartStatus', fetchUser, fetchCartStatus)
 
 router.post('/addStripePayment', fetchUser, addStripePaymentMethod)
 router.post('/confirmPayment', fetchUser, confirmPaymentMethod)
-router.post('/webhook', express.raw({type: 'application/json'}), stripeWebhook)
+// router.post('/webhook', express.raw({type: 'application/json'}), stripeWebhook)
 router.get('/salesLastFewMonth', getSalesPerMonth)
 
 //Submit form
