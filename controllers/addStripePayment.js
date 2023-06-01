@@ -88,9 +88,9 @@ const addStripePaymentMethod = async (req, res) => {
     success_url: `http://localhost:3000`,
     cancel_url: `http://localhost:3000/cart`
   });
-  res.send({url: session.url });
+  res.send({ url: session.url });
 
-    //console.log(session);
+  //console.log(session);
 
   const eventType = req.body.eventType;
   if (eventType === 'checkout.session.completed') {
@@ -108,14 +108,14 @@ const addStripePaymentMethod = async (req, res) => {
 
       const newOrder = new Order({
         userId: req.user.userId,
-        pamentIntentId: data.payment_intent ? data.payment_intent.id : null, 
+        pamentIntentId: data.payment_intent ? data.payment_intent.id : null,
         products: products,
         amount_subtotal: data.amount_subtotal,
         amount_total: data.amount_total,
         payment_status: data.payment_status,
         name: name,
         email: email,
-        address: address, 
+        address: address,
       });
 
       const savedOrder = await newOrder.save();
@@ -128,15 +128,16 @@ const addStripePaymentMethod = async (req, res) => {
       const savedSale = await newSale.save();
       console.log('generated sale:', savedSale);
 
-      console.log('Processed order:', savedOrder, session);
-      return(session.url);
+      console.log('Processed order:', savedOrder);
     };
     //res.send({session});
     const savedOrder = await createOrder(session);
+    return (savedOrder);
+
     // const sessionUrl = session.url;
     // return res.json({ sessionUrl });
 
-   // return res.send({ savedOrder });
+    // return res.send({ savedOrder });
   }
 
   res.send().end();
