@@ -95,7 +95,10 @@ const addStripePaymentMethod = async (req, res) => {
   const eventType = req.body.eventType;
   if (eventType === 'checkout.session.completed') {
     // Create order
+    const data = req.body;
     const createOrder = async (data) => {
+      console.log(data)
+
       const items = req.body.cartItems;
 
       const products = items.map(item => ({
@@ -131,7 +134,7 @@ const addStripePaymentMethod = async (req, res) => {
       console.log('Processed order:', savedOrder);
     };
     //res.send({session});
-    const savedOrder = await createOrder(session);
+    const savedOrder = await createOrder(data);
     return (savedOrder);
 
     // const sessionUrl = session.url;
