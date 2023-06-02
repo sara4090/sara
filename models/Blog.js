@@ -17,11 +17,13 @@ const blogSchema = Schema({
         },
       },
     ],
-  description: { type: String, required: true },
 
+  description: { type: String, required: true },
+  category: { type: String, required: true },
   author: { type: String, default: "Anonymous", required: true },
   date: { type: Date, default: Date.now, required: true },
   views: { type: Number, default: 0, },
+  blogType: { type: String,}
 
 });
 const Blog = new mongoose.model('blog', blogSchema);
