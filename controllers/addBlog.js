@@ -53,7 +53,8 @@ const addBlog = async (req, res) => {
       description: String(req.body.description),
       images: imagesArray,
       author: req.body.author,
-      category: category ? category.name : req.body.category
+      category: category ? category.name : req.body.category,
+      blogType: req.body.blogType
 
     });
 
