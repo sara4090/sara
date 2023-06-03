@@ -55,6 +55,10 @@ const userShema = new Schema({
         type: String,
         default: ''
     },
+    stripeCustomerId: {
+        type: String,
+        default: ''
+    }
 });
 const User = mongoose.model('user', userShema);
 module.exports = User;

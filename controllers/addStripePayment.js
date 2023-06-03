@@ -1,53 +1,51 @@
 const Order = require('../models/Order');
 const Sale = require('../models/Sale');
+const router = require('../routes/userRoutes');
 const stripe = require('stripe')(process.env.STRIPE_SECRET);
-
 
 // Add Stripe Payment Method API
 const addStripePaymentMethod = async (req, res) => {
-  const { name, email, description, address } = req.body;
+  const { name, email, description, address, cartItems = [] } = req.body;
 
-  const line_items = req.body.cartItems.map((item) => {
-    const images = Array.isArray(item.images) ? item.images : [item.images];
-    const customFields = {
-      mfr: item.mfr,
-      mfrNo: item.mfrNo
-    };
-
-    return {
-      price_data: {
-        currency: "USD",
-        product_data: {
-          name: item.name,
-          images: images,
-          description: item.desc,
-          metadata: {
-            id: item.id,
-            ...customFields
-          }
-        },
-        unit_amount: Math.round(item.price * 100)
-      },
-      quantity: item.quantity
-    };
+  // Create order
+  const order = new Order({
+    name,
+    email,
+    description,
+    address,
+    products: cartItems
   });
+  console.log('order data',req.body, order);
+  try {
+    // Save order in the database
+    const savedOrder = await order.save();
 
-   const data = req.body;
-  const createOrder = async (data) => {
-    console.log(data)
+    const line_items = cartItems?.length > 0 && cartItems.map((item) => {
+      const images = Array.isArray(item.images) ? item.images : [item.images];
+      const customFields = {
+        mfr: item.mfr,
+        mfrNo: item.mfrNo
+      };
 
-    const items = req.body.cartItems;
+      return {
+        price_data: {
+          currency: "USD",
+          product_data: {
+            name: item.name,
+            images: images,
+            description: item.desc,
+            metadata: {
+              id: item.id,
+              ...customFields
+            }
+          },
+          unit_amount: Math.round(item.price * 100)
+        },
+        quantity: item.quantity
+      };
+    });
 
-    const products = items.map(item => ({
-      name: item.name,
-      price: item.price,
-      quantity: item.quantity,
-      mfr: item.mfr,
-      mfrNo: item.mfrNo,
-    }));
-
-
-
+    // Create a session with Stripe
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ['card'],
       shipping_address_collection: {
@@ -103,58 +101,40 @@ const addStripePaymentMethod = async (req, res) => {
       mode: 'payment',
       success_url: `http://localhost:3000`,
       cancel_url: `http://localhost:3000/cart`,
-
-    });
-    res.json({ url: session.url });
-
-
-    const newOrder = new Order({
-      userId: req.user.userId,
-      pamentIntentId: data.payment_intent ? data.payment_intent.id : null,
-      products: products,
-      amount_subtotal: data.amount_subtotal,
-      amount_total: data.amount_total,
-      payment_status: data.payment_status,
-      name: name,
-      email: email,
-      address: address,
-    });
-    const savedOrder = await newOrder.save();
-    //res.json({ url: session.url });
-
-    //console.log(session);
-
-
-    //res.send({ url: session.url });
-
-
-    const newSale = new Sale({
-      orderId: savedOrder._id,
-      total: savedOrder.amount_total
     });
 
-    const savedSale = await newSale.save();
-    console.log('generated sale:', savedSale);
+    // Update the order with the session ID
+    savedOrder.sessionId = session.id;
+    console.log('saved order detail', savedOrder);
+    await savedOrder.save();
 
-    //console.log('Processed order:', savedOrder);
-    ;
+    res.json({ id: session.id });
+  } catch (error) {
+    // Handle any errors
+    res.status(500).json({ error: 'An error occurred' });
   }
-  const eventType = req.body.eventType;
-  if (eventType === 'checkout.session.completed') {
-    // Create order
+};
 
-    // res.send({session});
-    const savedOrder = await createOrder(data);
-    return (savedOrder);
+// router.post('/webhook', bodyParser.raw({type: 'application/json'}), (request, response) => {
+//   const event = request.body;
 
-    // const sessionUrl = session.url;
-    // return res.json({ sessionUrl });
+//   // Handle the event
+//   switch (event.type) {
+//     case 'payment_intent.succeeded':
+//       const paymentIntent = event.data.object;
+//       console.log('PaymentIntent was successful!');
+//       break;
+//     case 'payment_method.attached':
+//       const paymentMethod = event.data.object;
+//       console.log('PaymentMethod was attached to a Customer!');
+//       break;
+//     // ... handle other event types
+//     default:
+//       console.log(`Unhandled event type ${event.type}`);
+//   }
 
-    // return res.send({ savedOrder });
-  }
-
-  res.send().end();
-  ;
-}
+//   // Return a 200 response to acknowledge receipt of the event
+//   response.json({received: true});
+// });
 
 module.exports = { addStripePaymentMethod };

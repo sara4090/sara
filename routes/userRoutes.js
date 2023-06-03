@@ -49,14 +49,14 @@ const { deleteCategory } = require('../controllers/deleteCategory');
 //const { createCustomer, createIntent, attachPaymentMethod } = require('../controllers/addCustomrForPAyment');
 //const { createPaymentIntent, handlePaymentStatus } = require('../controllers/addStripePay');
 // const { importData } = require('../data/importData');
-const { addStripePaymentMethod } = require('../controllers/addStripePayment');
+//const { addStripePaymentMethod } = require('../controllers/addStripePayment');
 const { confirmPayment } = require('../controllers/addStripePayment');
 const { submitRfq } = require('../controllers/RQFformSubmission');
 // const { sendAttachMent } = require('../controllers/RFQAttachmentSubmission');
-const { stripeWebhook } = require('../controllers/addStripePayment');
 const { sendAttachment } = require('../controllers/RFQexcelMail');
 const { RFQhistory } = require('../controllers/RFQhistory');
 const { getSalesPerMonth } = require('../controllers/salesPerMonth');
+const { addStripePaymentMethod, stripeWebhook } = require('../controllers/addStripePaymentWithCustomer')
 
 //USER`S ROUTES
 router.post('/signup', signupValidation, signup);
@@ -111,11 +111,12 @@ router.get('/fetchCartStatus', fetchUser, fetchCartStatus)
 
 //PAYMENT
 
-router.post('/addStripePayment',fetchUser,addStripePaymentMethod)
+//router.post('/addStripePayment',fetchUser,addStripePaymentMethod)
+router.post('/stripeWithCustomer', addStripePaymentMethod)
 // router.post('/confirmPayment', fetchUser, confirmPaymentIntent)
 // router.post('/cancelPayment', fetchUser, cancelPayment)
-// router.post('/webhook', express.raw({type: 'application/json'}), stripeWebhook)
-router.get('/salesLastFewMonth', getSalesPerMonth)
+router.post('/webhook', express.raw({type: 'application/json'}), stripeWebhook)
+// router.get('/salesLastFewMonth', getSalesPerMonth)
 
 //Submit form
 router.post('/submitForm', submitRfq)
