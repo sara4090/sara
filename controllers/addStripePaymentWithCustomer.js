@@ -146,13 +146,13 @@ const createOrder = async (data) => {
 
   const newOrder = new Order({
     //userId: "646a0ca6d922dc5557f09f75", // need to be change as per given obj
-    pamentIntentId: data.payment_intent,
+    pamentIntentId: data?.payment_intent,
     products: products,  // need to be change as per given obj
     amount_subtotal: data?.amount,
     amount_total: data?.amount_total,
-    address: data.shipping.address,
-    shipping: data.shipping,
-    payment_status: data.paid ? 'paid' : 'pending'
+    address: data?.shipping_details?.address,
+    shipping: data?.shipping_details,
+    payment_status: data?.paid ? 'paid' : 'pending'
   });
   console.log('test with order', newOrder);
 
