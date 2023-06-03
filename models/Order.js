@@ -1,9 +1,6 @@
 const mongoose = require('mongoose');
 
 const orderSchema = new mongoose.Schema({
-  user: { type: mongoose.Schema.Types.ObjectId, ref: 'user' },
-  // custId: { type: mongoose.Schema.Types.ObjectId, ref: 'users' },
-  //customerId: { type: String },
   paymentIntentId: { type: String },
   name: { type: String },
   email: { type: String },
@@ -26,8 +23,7 @@ const orderSchema = new mongoose.Schema({
   amount_total: { type: Number, },
   shipping: { type: Object, },
   delivery_status: { type: String, default: 'pending' },
-  payment_status: { type: String, },
-  customer: { type: Object, }
+  payment_status: { type: String, }
 });
 
 const Order = mongoose.model('order', orderSchema);

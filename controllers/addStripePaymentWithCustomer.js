@@ -27,7 +27,7 @@ const addStripePaymentMethod = async (req, res) => {
     console.log("savedCustomer", savedCustomer);
   }
 
-  console.log('customer',stripeCustomerIdParam, 'cus_O0rEBGjhf1ZtoU');
+  console.log('customer',stripeCustomerIdParam);
 
   const line_items = req.body.cartItems.map((item) => {
     const images = Array.isArray(item.images) ? item.images : [item.images];
@@ -121,8 +121,8 @@ const addStripePaymentMethod = async (req, res) => {
   }
 };
 // Create order
-const createOrder = async (customerId, data) => {
-  console.log('data =>', data, customerId);
+const createOrder = async (data) => {
+  console.log('data =>', data);
   const cartItems= [
     {
       name: 'Product 1',
@@ -145,26 +145,18 @@ const createOrder = async (customerId, data) => {
   }));
 
   const newOrder = new Order({
-    userId: "646a0ca6d922dc5557f09f75", // need to be change as per given obj
+    //userId: "646a0ca6d922dc5557f09f75", // need to be change as per given obj
     pamentIntentId: data.payment_intent,
     products: products,  // need to be change as per given obj
     amount_subtotal: data?.amount,
     amount_total: data?.amount_total,
-    shipping: data.shipping.adress,
-    payment_status: data.payment_status
+    address: data.shipping.address,
+    shipping: data.shipping,
+    payment_status: data.paid ? 'paid' : 'pending'
   });
-  console.log('test with webhook', newOrder);
+  console.log('test with order', newOrder);
 
   const savedOrder = await newOrder.save();
-
-  const newSale = new Sale({
-    userId: customerId,
-    orderId: savedOrder._id,
-    total: savedOrder?.total || 0
-  });
-
-  const savedSale = await newSale.save();
-  console.log('generated sale:', savedSale);
 
   console.log('Processed order:', savedOrder);
   return savedOrder
@@ -189,8 +181,8 @@ console.log('req.body', req.body);
       return;
     }
 
-    data = event.data.object;
-    eventType = event.type;
+    data = req.body.data.object;
+    eventType = req.body.type;
   } else {
     data = req.body.data.object;
     eventType = req.body.type;
@@ -198,21 +190,18 @@ console.log('req.body', req.body);
 
   const customer = await stripe.customers.retrieve(data.customer);
 
-  console.error('Saved customer ===>:', customer);
+  console.error('Stripe customer ===>:', customer);
   // Handle the event
   if (eventType === 'checkout.session.completed') {
     try {
-      const savedOrder = await createOrder(customer, data);
-
-      console.error('Saved Order webhook event:', savedOrder);
-
+      const savedOrder = await createOrder(data);
+      console.error('Saved Order webhook event:', savedOrder);      
+   
     } catch (error) {
-      console.error('Error handling webhook event:', error.message);
-      return res.status(500).send('Internal Server Error');
+      return res.status(500).send({error:"Internal Server Error", message: error.message});
     }
   }
-
-  res.send().end();
+  res.send({Status: "Payment Successfully"});
 };
 
 
