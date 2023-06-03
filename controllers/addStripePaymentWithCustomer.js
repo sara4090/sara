@@ -9,22 +9,9 @@ const Schema = mongoose.Schema;
 // Add Stripe Payment Method API
 const addStripePaymentMethod = async (req, res) => {
   const { name, email, description, address, stripeCustomerId='' } = req.body;
+  console.log('stripeCustomerId', stripeCustomerId, !stripeCustomerId, req.body)
   if(!stripeCustomerId){
-    //fetch loogedInuserDetails from db
-      // const customer = await stripe.customers.create({
-      //   name,
-      //   email,
-      //   description,
-      //   address,
-      //   metadata: {
-      //     userId: req.body.userId,
-      //     cart: JSON.stringify(req.body.cartItems)
-      //   }
-      // });
-      
-
-      //const newCustomer = new Customer(customer);
-    // const savedCustomer = await newCustomer.save();
+    // fetch user details and create new customer if not exists
   }
   
   console.log('customer', 'cus_O0rEBGjhf1ZtoU');
@@ -109,12 +96,12 @@ const addStripePaymentMethod = async (req, res) => {
       customer: stripeCustomerId,
       line_items,
       mode: 'payment',
-      success_url: `http://localhost:3000`,
+      success_url: `http://localhost:3000/cart`,
       cancel_url: `http://localhost:3000/cart`
     });
 
-    res.send({id: session.id });
     console.log(session);
+    res.json({id: session.id });
   } catch (error) {
     console.log(error);
     //res.status(500).json({ error: error.message });
@@ -168,7 +155,7 @@ const stripeWebhook = async (req, res) => {
   let data;
   let eventType;
 
-  const endpointSecret = "whsec_d35bf67d2b8c9ef7bee87fe0c353e76e045d58abc930079985445ae4bcfb2c35";
+  const endpointSecret = "";
 
   if (endpointSecret) {
     let event;
