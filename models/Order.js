@@ -2,8 +2,8 @@ const mongoose = require('mongoose');
 
 const orderSchema = new mongoose.Schema({
   user: { type: mongoose.Schema.Types.ObjectId, ref: 'user' },
-  custId: { type: mongoose.Schema.Types.ObjectId, ref: 'users' },
-  customerId: { type: String },
+  // custId: { type: mongoose.Schema.Types.ObjectId, ref: 'users' },
+  //customerId: { type: String },
   paymentIntentId: { type: String },
   name: { type: String },
   email: { type: String },

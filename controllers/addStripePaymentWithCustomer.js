@@ -8,13 +8,26 @@ const Schema = mongoose.Schema;
 
 // Add Stripe Payment Method API
 const addStripePaymentMethod = async (req, res) => {
-  const { name, email, description, address, stripeCustomerId='' } = req.body;
+  const { name, email, description, address, stripeCustomerId = '' } = req.body;
+  let stripeCustomerIdParam=stripeCustomerId;
   console.log('stripeCustomerId', stripeCustomerId, !stripeCustomerId, req.body)
-  if(!stripeCustomerId){
+  if (!stripeCustomerId) {
     // fetch user details and create new customer if not exists
+    const savedCustomer = await stripe.customers.create({
+      name: "seerat test1",
+      email: "kumar@gmail.com",
+      description: 'tst',
+      address: "",
+      metadata: {
+        userId: "2131",
+        cart: JSON.stringify(req?.body?.cartItems)
+      }
+    });
+    stripeCustomerIdParam= savedCustomer.id;
+    console.log("savedCustomer", savedCustomer);
   }
-  
-  console.log('customer', 'cus_O0rEBGjhf1ZtoU');
+
+  console.log('customer',stripeCustomerIdParam, 'cus_O0rEBGjhf1ZtoU');
 
   const line_items = req.body.cartItems.map((item) => {
     const images = Array.isArray(item.images) ? item.images : [item.images];
@@ -93,7 +106,7 @@ const addStripePaymentMethod = async (req, res) => {
         enabled: true
       },
       billing_address_collection: 'required',
-      customer: stripeCustomerId,
+      customer: stripeCustomerIdParam,
       line_items,
       mode: 'payment',
       success_url: `http://localhost:3000/cart`,
@@ -101,60 +114,68 @@ const addStripePaymentMethod = async (req, res) => {
     });
 
     console.log(session);
-    res.json({id: session.id });
+    res.json({ id: session.id });
   } catch (error) {
     console.log(error);
     //res.status(500).json({ error: error.message });
   }
 };
+// Create order
+const createOrder = async (customerId, data) => {
+  console.log('data =>', data, customerId);
+  const cartItems= [
+    {
+      name: 'Product 1',
+      price: 19,
+      quantity: 2,
+      images: [Array],
+      desc: 'Product 1 description',
+      id: '123456',
+      mfr: 'Manufacturer 1',
+      mfrNo: 'ABC123'
+    }
+  ];
 
-    
-  // Create order
-  const createOrder = async (customer, data) => {
-    const items = JSON.parse(customer.metadata.cart);
+  const products = cartItems.map(item => ({
+    name: item.name,
+    price: item.price,
+    quantity: item.quantity,
+    mfr: data.mfr,
+    mfrNo: data.mfrNo,
+  }));
 
-    const products = data.cartItems.map(item => ({
-      name: item.name,
-      price: item.price,
-      quantity: item.quantity,
-      mfr: data.mfr,
-      mfrNo: data.mfrNo,
-    }));
+  const newOrder = new Order({
+    userId: "646a0ca6d922dc5557f09f75", // need to be change as per given obj
+    pamentIntentId: data.payment_intent,
+    products: products,  // need to be change as per given obj
+    amount_subtotal: data?.amount,
+    amount_total: data?.amount_total,
+    shipping: data.shipping.adress,
+    payment_status: data.payment_status
+  });
+  console.log('test with webhook', newOrder);
 
-    const newOrder = new Order({
-      userId: customer.metadata.userId,
-      customerId: data.customer,
-      pamentIntentId: data.payment_intent,
-      products: products,
-      amount_subtotal: data.amount_subtotal,
-      amount_total: data.amount_total,
-      shipping: customer.adress,
-      payment_status: data.payment_status,
-      customer: customer
-    });
-    console.log('test with webhook', newOrder);
+  const savedOrder = await newOrder.save();
 
-    const savedOrder = await newOrder.save();
+  const newSale = new Sale({
+    userId: customerId,
+    orderId: savedOrder._id,
+    total: savedOrder?.total || 0
+  });
 
-    const newSale = new Sale({
-      userId: savedOrder.userId,
-      orderId: savedOrder._id,
-      total: savedOrder.total
-    });
+  const savedSale = await newSale.save();
+  console.log('generated sale:', savedSale);
 
-    const savedSale = await newSale.save();
-    console.log('generated sale:', savedSale);
-
-    console.log('Processed order:', savedOrder);
-    return savedOrder
-  };
+  console.log('Processed order:', savedOrder);
+  return savedOrder
+};
 
 // Stripe Webhook API
 const stripeWebhook = async (req, res) => {
   const sig = req.headers['stripe-signature'];
   let data;
   let eventType;
-
+console.log('req.body', req.body);
   const endpointSecret = "";
 
   if (endpointSecret) {
@@ -176,12 +197,13 @@ const stripeWebhook = async (req, res) => {
   }
 
   const customer = await stripe.customers.retrieve(data.customer);
- 
+
+  console.error('Saved customer ===>:', customer);
   // Handle the event
   if (eventType === 'checkout.session.completed') {
     try {
       const savedOrder = await createOrder(customer, data);
-      
+
       console.error('Saved Order webhook event:', savedOrder);
 
     } catch (error) {
