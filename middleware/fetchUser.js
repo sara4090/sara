@@ -11,9 +11,7 @@ const fetchUser = async(req, res, next) => {
         try{
             const data = JWT.verify(token, secKey)
             req.user = data.user;
-            next()
-
-        
+            next()  
     } catch (error) {
         console.error(error.message)
     }

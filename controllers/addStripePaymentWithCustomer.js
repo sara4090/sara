@@ -1,33 +1,19 @@
-const Customer = require('../models/Customer');
+const User = require('../models/User');
 const Order = require('../models/Order');
 const Sale = require('../models/Sale');
 const stripe = require('stripe')(process.env.STRIPE_SECRET);
 require('dotenv').config();
-const mongoose = require('mongoose');
-const Schema = mongoose.Schema;
+
 
 // Add Stripe Payment Method API
 const addStripePaymentMethod = async (req, res) => {
-  const { name, email, description, address, stripeCustomerId = '' } = req.body;
-  let stripeCustomerIdParam=stripeCustomerId;
-  console.log('stripeCustomerId', stripeCustomerId, !stripeCustomerId, req.body)
+  const loggedInUserId = req?.user?.id;
+  let { stripeCustomerId = '' } = req.body;
+  console.log('stripeCustomerId =====>', loggedInUserId, stripeCustomerId)
   if (!stripeCustomerId) {
     // fetch user details and create new customer if not exists
-    const savedCustomer = await stripe.customers.create({
-      name: "seerat test1",
-      email: "kumar@gmail.com",
-      description: 'tst',
-      address: "",
-      metadata: {
-        userId: "2131",
-        cart: JSON.stringify(req?.body?.cartItems)
-      }
-    });
-    stripeCustomerIdParam= savedCustomer.id;
-    console.log("savedCustomer", savedCustomer);
+    stripeCustomerId = await createStripeCustomerIfNotExists(loggedInUserId);  
   }
-
-  console.log('customer',stripeCustomerIdParam);
 
   const line_items = req.body.cartItems.map((item) => {
     const images = Array.isArray(item.images) ? item.images : [item.images];
@@ -106,35 +92,39 @@ const addStripePaymentMethod = async (req, res) => {
         enabled: true
       },
       billing_address_collection: 'required',
-      customer: stripeCustomerIdParam,
+      customer: stripeCustomerId,
       line_items,
       mode: 'payment',
       success_url: `http://localhost:3000/`,
-      cancel_url: `http://localhost:3000/cart`
+      cancel_url: `http://localhost:3000/cart`,
+      metadata:{
+        cart: JSON.stringify(req?.body?.cartItems)
+      }
     });
 
     console.log(session);
     res.json({ id: session.id });
   } catch (error) {
     console.log(error);
-    //res.status(500).json({ error: error.message });
+    res.status(500).json({ error: error.message });
   }
 };
 // Create order
-const createOrder = async (data) => {
+const createOrder = async (data, user) => {
   console.log('data =>', data);
-  const cartItems= [
+  const cartItems= 
+  [
     {
-      name: 'Product 1',
-      price: 19,
-      quantity: 2,
-      images: [Array],
-      desc: 'Product 1 description',
+      name: data.name,
+      price: data.price,
+      quantity: data.quantity,
+      images: 'images',
+      desc: data.description,
       id: '123456',
-      mfr: 'Manufacturer 1',
-      mfrNo: 'ABC123'
-    }
-  ];
+      mfr: data.mfr,
+      mfrNo: data.mfrNo
+   }
+ ];
 
   const products = cartItems.map(item => ({
     name: item.name,
@@ -146,6 +136,7 @@ const createOrder = async (data) => {
 
   const newOrder = new Order({
     //userId: "646a0ca6d922dc5557f09f75", // need to be change as per given obj
+    user: user,
     pamentIntentId: data?.payment_intent,
     products: products,  // need to be change as per given obj
     amount_subtotal: data?.amount,
@@ -194,7 +185,7 @@ console.log('req.body', req.body);
   // Handle the event
   if (eventType === 'checkout.session.completed') {
     try {
-      const savedOrder = await createOrder(data);
+      const savedOrder = await createOrder(data, req.user);
       console.error('Saved Order webhook event:', savedOrder);      
    
     } catch (error) {
@@ -203,6 +194,38 @@ console.log('req.body', req.body);
   }
   res.send({Status: "Payment Successfully"});
 };
+
+
+// create stripe customer if not exists
+const createStripeCustomerIfNotExists = async (loggedInUserId) => {
+  try{
+  console.log('userdetails =====>',loggedInUserId);
+  const { name='', email='', address=''}= await User.findById({_id:loggedInUserId});        
+  console.log('userdetails =====>', name, email, address);
+    const newStripeCustomer = await stripe.customers.create({
+      name,
+      email,
+      description: 'created new user',
+      address: {
+        line1: address,
+        postal_code: '300233',
+        city: address,
+        state: address,
+        country: 'Pak'
+      },
+      metadata: {
+        userId: loggedInUserId || '',
+      }
+    });
+     // update this stripe customer id to logged in user in db    
+     await User.updateOne({ email: email }, { $set: { stripeCustomerId: newStripeCustomer.id } })
+     console.log("savedCustomer", newStripeCustomer);
+
+     return newStripeCustomer.id;  
+  }catch(excp){
+    console.log('excp', excp);    
+  } 
+}
 
 
 module.exports = { addStripePaymentMethod, stripeWebhook };

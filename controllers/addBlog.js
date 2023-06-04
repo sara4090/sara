@@ -2,7 +2,7 @@ const Blog = require("../models/Blog");
 const { getDataUri } = require("../data/productData");
 const cloudinary = require("cloudinary");
 const { validationResult } = require('express-validator')
-const Category = require('../models/Category')
+const BlogCategory = require('../models/BlogCategory')
 
 require('dotenv').config()
 
@@ -42,9 +42,17 @@ const addBlog = async (req, res) => {
         url: upload.secure_url,
       }));
 
-    }
+    };
 
-    const category = await Category.findOne({ name: req.body.category });
+    const category = await BlogCategory.findOne({ name: req.body.category });
+
+    let blogCategory;
+    if (!category) {
+      blogCategory = new BlogCategory({
+        name: req.body.category
+      });
+      await blogCategory.save();
+    }
 
 
     const blog = new Blog({

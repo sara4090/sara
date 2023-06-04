@@ -112,7 +112,7 @@ router.get('/fetchCartStatus', fetchUser, fetchCartStatus)
 //PAYMENT
 
 //router.post('/addStripePayment',fetchUser,addStripePaymentMethod)
-router.post('/stripeWithCustomer', addStripePaymentMethod)
+router.post('/stripeWithCustomer', fetchUser, addStripePaymentMethod)
 // router.post('/confirmPayment', fetchUser, confirmPaymentIntent)
 // router.post('/cancelPayment', fetchUser, cancelPayment)
 router.post('/webhook', express.raw({type: 'application/json'}), stripeWebhook)
