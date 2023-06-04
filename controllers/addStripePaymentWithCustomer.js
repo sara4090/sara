@@ -136,6 +136,13 @@ const createOrder = async (data, customerId) => {
   const savedOrder = await newOrder.save();
 
   console.log('Processed order:', savedOrder);
+
+  const newSale = new Sale({
+      orderId: savedOrder._id,
+      userId: customerId,
+    });
+
+    const savedSale = await newSale.save();
   return savedOrder
 };
 

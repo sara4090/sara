@@ -56,7 +56,8 @@ const { submitRfq } = require('../controllers/RQFformSubmission');
 const { sendAttachment } = require('../controllers/RFQexcelMail');
 const { RFQhistory } = require('../controllers/RFQhistory');
 const { getSalesPerMonth } = require('../controllers/salesPerMonth');
-const { addStripePaymentMethod, stripeWebhook } = require('../controllers/addStripePaymentWithCustomer')
+const { addStripePaymentMethod, stripeWebhook } = require('../controllers/addStripePaymentWithCustomer');
+const { addSubscription, getSingleSubscription, getAllSubscriptions, deleteSubscription } = require('../controllers/subscription');
 
 //USER`S ROUTES
 router.post('/signup', signupValidation, signup);
@@ -116,10 +117,16 @@ router.post('/stripeWithCustomer', fetchUser, addStripePaymentMethod)
 // router.post('/confirmPayment', fetchUser, confirmPaymentIntent)
 // router.post('/cancelPayment', fetchUser, cancelPayment)
 router.post('/webhook', express.raw({type: 'application/json'}), stripeWebhook)
-// router.get('/salesLastFewMonth', getSalesPerMonth)
+router.get('/salesLastFewMonth', getSalesPerMonth)
 
 //Submit form
 router.post('/submitForm', submitRfq)
 router.post('/sendAttachment', upload.single('file'), sendAttachment)
 router.get('/rqfHistory', RFQhistory)
 module.exports = router;
+
+//Subscriptions
+router.post('/addSubscription', addSubscription)
+router.get('/getSingleSubscription/:email', getSingleSubscription)
+router.get('/getAllSubscription', getAllSubscriptions)
+router.delete('/deleteSubscription/:email', deleteSubscription)
