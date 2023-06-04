@@ -110,21 +110,9 @@ const addStripePaymentMethod = async (req, res) => {
   }
 };
 // Create order
-const createOrder = async (data, user) => {
-  console.log('data =>', data);
-  const cartItems= 
-  [
-    {
-      name: data.name,
-      price: data.price,
-      quantity: data.quantity,
-      images: 'images',
-      desc: data.description,
-      id: '123456',
-      mfr: data.mfr,
-      mfrNo: data.mfrNo
-   }
- ];
+const createOrder = async (data, customerId) => {
+  console.log('data neer =>',customerId, JSON.parse(data.metadata.cart));
+  const cartItems= JSON.parse(data.metadata.cart)
 
   const products = cartItems.map(item => ({
     name: item.name,
@@ -135,17 +123,15 @@ const createOrder = async (data, user) => {
   }));
 
   const newOrder = new Order({
-    //userId: "646a0ca6d922dc5557f09f75", // need to be change as per given obj
-    user: user,
+    userId: customerId,
     pamentIntentId: data?.payment_intent,
-    products: products,  // need to be change as per given obj
+    products: products,
     amount_subtotal: data?.amount,
     amount_total: data?.amount_total,
     address: data?.shipping_details?.address,
     shipping: data?.shipping_details,
     payment_status: data?.paid ? 'paid' : 'pending'
   });
-  console.log('test with order', newOrder);
 
   const savedOrder = await newOrder.save();
 
@@ -179,13 +165,10 @@ console.log('req.body', req.body);
     eventType = req.body.type;
   }
 
-  const customer = await stripe.customers.retrieve(data.customer);
-
-  console.error('Stripe customer ===>:', customer);
   // Handle the event
   if (eventType === 'checkout.session.completed') {
     try {
-      const savedOrder = await createOrder(data, req.user);
+      const savedOrder = await createOrder(data, req?.user?.id);
       console.error('Saved Order webhook event:', savedOrder);      
    
     } catch (error) {
