@@ -1,4 +1,5 @@
 const User = require('../models/User');
+const Customer = require('../models/Customer')
 const Order = require('../models/Order');
 const Sale = require('../models/Sale');
 const stripe = require('stripe')(process.env.STRIPE_SECRET);
@@ -12,7 +13,7 @@ const addStripePaymentMethod = async (req, res) => {
   console.log('stripeCustomerId =====>', loggedInUserId, stripeCustomerId)
   if (!stripeCustomerId) {
     // fetch user details and create new customer if not exists
-    stripeCustomerId = await createStripeCustomerIfNotExists(loggedInUserId);  
+    stripeCustomerId = await createStripeCustomerIfNotExists(loggedInUserId);
   }
 
   const line_items = req.body.cartItems.map((item) => {
@@ -97,7 +98,7 @@ const addStripePaymentMethod = async (req, res) => {
       mode: 'payment',
       success_url: `http://localhost:3000/`,
       cancel_url: `http://localhost:3000/cart`,
-      metadata:{
+      metadata: {
         cart: JSON.stringify(req?.body?.cartItems)
       }
     });
@@ -111,8 +112,8 @@ const addStripePaymentMethod = async (req, res) => {
 };
 // Create order
 const createOrder = async (data, customerId) => {
-  console.log('data neer =>',customerId, JSON.parse(data.metadata.cart));
-  const cartItems= JSON.parse(data.metadata.cart)
+  console.log('data neer =>', customerId, JSON.parse(data.metadata.cart));
+  const cartItems = JSON.parse(data.metadata.cart)
 
   const products = cartItems.map(item => ({
     name: item.name,
@@ -138,11 +139,11 @@ const createOrder = async (data, customerId) => {
   console.log('Processed order:', savedOrder);
 
   const newSale = new Sale({
-      orderId: savedOrder._id,
-      userId: customerId,
-    });
+    orderId: savedOrder._id,
+    userId: customerId,
+  });
 
-    const savedSale = await newSale.save();
+  const savedSale = await newSale.save();
   return savedOrder
 };
 
@@ -151,7 +152,7 @@ const stripeWebhook = async (req, res) => {
   const sig = req.headers['stripe-signature'];
   let data;
   let eventType;
-console.log('req.body', req.body);
+  console.log('req.body', req.body);
   const endpointSecret = "";
 
   if (endpointSecret) {
@@ -176,22 +177,22 @@ console.log('req.body', req.body);
   if (eventType === 'checkout.session.completed') {
     try {
       const savedOrder = await createOrder(data, req?.user?.id);
-      console.error('Saved Order webhook event:', savedOrder);      
-   
+      console.error('Saved Order webhook event:', savedOrder);
+
     } catch (error) {
-      return res.status(500).send({error:"Internal Server Error", message: error.message});
+      return res.status(500).send({ error: "Internal Server Error", message: error.message });
     }
   }
-  res.send({Status: "Payment Successfully"});
+  res.send({ Status: "Payment Successfully" });
 };
 
 
 // create stripe customer if not exists
 const createStripeCustomerIfNotExists = async (loggedInUserId) => {
-  try{
-  console.log('userdetails =====>',loggedInUserId);
-  const { name='', email='', address=''}= await User.findById({_id:loggedInUserId});        
-  console.log('userdetails =====>', name, email, address);
+  try {
+    console.log('userdetails =====>', loggedInUserId);
+    const { name = '', email = '', address = '' } = await User.findById({ _id: loggedInUserId });
+    console.log('userdetails =====>', name, email, address);
     const newStripeCustomer = await stripe.customers.create({
       name,
       email,
@@ -207,14 +208,17 @@ const createStripeCustomerIfNotExists = async (loggedInUserId) => {
         userId: loggedInUserId || '',
       }
     });
-     // update this stripe customer id to logged in user in db    
-     await User.updateOne({ email: email }, { $set: { stripeCustomerId: newStripeCustomer.id } })
-     console.log("savedCustomer", newStripeCustomer);
+    // update this stripe customer id to logged in user in db    
+    await User.updateOne({ email: email }, { $set: { stripeCustomerId: newStripeCustomer.id } })
+    console.log("savedCustomer", newStripeCustomer);
 
-     return newStripeCustomer.id;  
-  }catch(excp){
-    console.log('excp', excp);    
-  } 
+    const customerTosave = new Customer(newStripeCustomer);
+    const savedCustomer = await customerTosave.save()
+    return newStripeCustomer.id;
+
+  } catch (excp) {
+    console.log('excp', excp);
+  }
 }
 
 

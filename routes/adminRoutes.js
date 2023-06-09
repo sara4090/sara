@@ -29,6 +29,11 @@ const { deleteBlog } = require('../controllers/deleteBlog');
 const { adminVerifyerifyMail } = require('../mails/adminVerifyMail');
 const { customerLastFewMonths } = require('../controllers/customerLastFewMonths');
 const { totalCustomers } = require('../controllers/totalCustomers');
+const { addAboutUs } = require('../controllers/addAboutUs');
+const { getAboutUs } = require('../controllers/getAboutUs');
+const { termsContions, getTermsConditions } = require('../controllers/termsCondition');
+const { getPrivecy, privecyPolicy } = require('../controllers/privecyPolicy');
+
 
 router.post('/signup', adminSignupValidation, adminSignup)
 router.get('/verify', adminVerifyerifyMail)
@@ -59,5 +64,17 @@ router.delete('/deleteBlog/:id', fetchUser, deleteBlog)
 //Customers
 router.get('/customers', customerLastFewMonths)
 router.get('/totalCustomers', totalCustomers)
+
+//About Us
+router.post('/aboutus', uploadImages, addAboutUs)
+router.get('/getAboutus', getAboutUs)
+
+//Terms n Conditions
+router.put('/terms', termsContions)
+router.get('/getTerms', getTermsConditions)
+
+//Privecy Policy
+router.get('/getPrivecyPolicy', getPrivecy)
+router.put('/privecyPolicy', privecyPolicy)
 
 module.exports = router;

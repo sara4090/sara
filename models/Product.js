@@ -58,7 +58,6 @@ const productSchema = new Schema({
   factoryLead: { type: String },
   lifeCycle: { type: String },
   contactPlating: { type: String },
-  Pucblished: { type: String },
   CPU: { type: String },
   published: { type: String },
   series: { type: String },

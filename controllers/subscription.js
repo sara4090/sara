@@ -1,10 +1,11 @@
+const { eventNames } = require('../models/Sale');
 const Subscription = require('../models/Subscription')
 
 //Addibg subscription
 const addSubscription = async (req, res) => {
-    const { email, plan } = req.body;
+    const { email, name } = req.body;
 
-    if (!email || !plan) {
+    if (!email || !eventNames) {
         return res.status(400).json({ error: 'Email and plan are required' });
     }
     try {
@@ -13,7 +14,7 @@ const addSubscription = async (req, res) => {
             res.json({ message: "Already subscribed " })
         }
 
-        const newSubscription = new Subscription({ email, plan });
+        const newSubscription = new Subscription({ email, name });
 
         const savedSubscription = await newSubscription.save()
         res.json({ savedSubscription })
