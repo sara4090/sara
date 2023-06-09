@@ -33,7 +33,7 @@ const addAboutUs = async (req, res) => {
 
     };
 
-    // const { name,title, description, founders, yearFounded } = req.body;
+    const { name, founders, yearFounded } = req.body;
 
     // Check if the company information already exists
     const existingCompany = await About.findOne().sort({ _id: -1 });
@@ -51,7 +51,7 @@ const addAboutUs = async (req, res) => {
     } else {
       // Create a new company document
       const newCompany = new About({
-        name: String(req.body.name),
+        name,
 
         title: String(req.body.title),
 
@@ -63,7 +63,7 @@ const addAboutUs = async (req, res) => {
       });
 
       await newCompany.save();
-      res.json(newCompany);
+      res.json({ newCompany });
     }
 
   }
