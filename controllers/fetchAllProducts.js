@@ -3,7 +3,7 @@ const Product = require('../models/Product');
 const fetchProducts = async (req, res) => {
   const userId = req.user.id;
   try {
-    const product = await Product.find({ user: userId }).limit(10);
+    const product = await Product.find({ user: userId });
 
     if (!product) {
       return res.status(404).send({ message: "Products not found" });
